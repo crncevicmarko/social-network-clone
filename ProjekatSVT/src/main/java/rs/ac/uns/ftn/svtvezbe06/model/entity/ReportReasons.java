@@ -1,0 +1,14 @@
+package rs.ac.uns.ftn.svtvezbe06.model.entity;
+
+public enum ReportReasons {
+	BREAKES_RULES,
+	HARASSMENT,
+	HATE,
+	SHARING_PERSONAL_INFORMATION,
+	IMPERSONATION,
+	COPYING_VIOLATION,
+	TRADEMARK_VIOLATION,
+	SPAM,
+	SELF_HARL_OR_SUICITE,
+	OTHER
+}
