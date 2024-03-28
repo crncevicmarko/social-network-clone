@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body>
+    <div class="container">
+      <h1>User Personal Data</h1>
+      <form #submit="ngForm" (ngSubmit)="signInForm(submit)">
+        <div>
+          <input
+            type="text"
+            hidden
+            [(ngModel)]="logedUser.id"
+            id="id"
+            name="id"
+          />
+        </div>
+        <div>
+          <label for="username">Username:</label>
+          <input
+            type="text"
+            [(ngModel)]="logedUser.username"
+            id="username"
+            name="username"
+          />
+        </div>
+        <div>
+          <label for="firstName">First Name:</label>
+          <input
+            type="text"
+            [(ngModel)]="logedUser.firstName"
+            id="firstName"
+            name="firstName"
+          />
+        </div>
+        <div>
+          <label for="lastName">Last Name:</label>
+          <input
+            type="text"
+            [(ngModel)]="logedUser.lastName"
+            id="lastName"
+            name="lastName"
+          />
+        </div>
+        <div>
+          <label for="email">Email:</label>
+          <input
+            type="email"
+            [(ngModel)]="logedUser.email"
+            id="email"
+            name="email"
+          />
+        </div>
+        <button>Submit</button>
+      </form>
+    </div>
+    <app-chpsform></app-chpsform>
+
+    <table class="user-table">
+      <tr>
+        <th>Group Name</th>
+      </tr>
+      <tr *ngFor="let group of groups">
+        <td>{{ group.name }}</td>
+      </tr>
+    </table>
+  </body>
+</html>

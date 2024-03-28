@@ -1,0 +1,86 @@
+<div class="comment">
+  <div class="comment-image-container">
+    <img src="./assets/images/user-icon.png" />
+  </div>
+  <div class="comment-right-part">
+    <div class="comment-content">
+      <div class="comment-author">
+        {{ "UserName: " + comment.userName }}
+      </div>
+      <div class="comment-text" *ngIf="!isEditing()">
+        {{ "Comment text: " + comment.text }}
+      </div>
+      <app-comment-form
+        *ngIf="isEditing()"
+        submitLabel="Update"
+        [hasCancelButton]="true"
+        [initialText]="comment.text"
+        (handleSubmit)="
+          updateComment.emit({ text: $event, commentId: comment.id })
+        "
+        (handleCancel)="setActiveComment.emit(null)"
+      ></app-comment-form>
+      <div class="comment-actions">
+        <div
+          *ngIf="canReply"
+          class="comment-action"
+          (click)="setActiveComment.emit({ id: comment.id, type: 'replying' })"
+        >
+          Reply
+        </div>
+        <div
+          *ngIf="canEdit"
+          class="comment-action"
+          (click)="setActiveComment.emit({ id: comment.id, type: 'editing' })"
+        >
+          Edit
+        </div>
+        <div
+          *ngIf="canDelete"
+          class="comment-action"
+          (click)="deleteComment.emit(comment.id)"
+        >
+          Delete
+        </div>
+
+        <button class="btn btn-danger redbtn" (click)="toggleReportList()">
+          ...
+        </button>
+        <div *ngIf="showReportList" class="report-list">
+          <select [(ngModel)]="selectedReportOption">
+            <option *ngFor="let option of reportOptions" [value]="option">
+              {{ option }}
+            </option>
+          </select>
+          <button
+            class="btn btn-danger redbtn"
+            (click)="report(selectedReportOption, comment)"
+          >
+            Report
+          </button>
+        </div>
+      </div>
+      <app-comment-form
+        *ngIf="isReplying()"
+        submitLabel="Reply"
+        (handleSubmit)="
+          addComment.emit({ text: $event, postId: postId, parentId: replyId })
+        "
+      ></app-comment-form>
+      <div class="replies" *ngIf="replies.length > 0">
+        <app-comment
+          *ngFor="let reply of replies"
+          [comment]="reply"
+          (setActiveComment)="setActiveComment.emit($event)"
+          [activeComment]="activeComment"
+          (addComment)="addComment.emit($event)"
+          (updateComment)="updateComment.emit($event)"
+          [parentId]="comment.id.toString()"
+          [replies]="[]"
+          [curentUserId]="curentUserId"
+        >
+        </app-comment>
+      </div>
+    </div>
+  </div>
+</div>

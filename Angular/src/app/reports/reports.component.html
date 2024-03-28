@@ -1,0 +1,27 @@
+<table>
+  <tr>
+    <th>Report Reason</th>
+    <th>Creation Time</th>
+    <th>PostId</th>
+    <th>CommentId</th>
+    <th>UserId</th>
+  </tr>
+  <tr *ngFor="let report of reposrts">
+    <th><input type="text" value="{{ report.reason }}" /></th>
+    <th>
+      <input type="text" value="{{ report.timeStamp }}" />
+    </th>
+    <th>
+      <input type="text" value="{{ report.post_id }}" />
+    </th>
+    <th>
+      <input type="text" value="{{ report.comment_id }}" />
+    </th>
+    <th>
+      <input type="text" value="{{ report.user_id }}" />
+    </th>
+    <th>
+      <button (click)="inspect(report.post_id)">Inspect</button>
+    </th>
+  </tr>
+</table>

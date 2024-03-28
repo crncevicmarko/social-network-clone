@@ -1,0 +1,44 @@
+<form
+  #loginFrom="ngForm"
+  (ngSubmit)="login(loginFrom)"
+  method="post"
+  action="#"
+>
+  <div class="row">
+    <div class="col-12">
+      <div class="form-group position-relative">
+        <span class="zmdi zmdi-account"></span>
+        <input
+          type="text"
+          class="form-control"
+          ngModel
+          name="username"
+          placeholder="Username"
+        />
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-group position-relative">
+        <span class="zmdi zmdi-email"></span>
+        <input
+          type="password"
+          id="password"
+          ngModel
+          name="password"
+          class="form-control"
+          placeholder="Password"
+        />
+      </div>
+    </div>
+    <div class="col-12 mt-30">
+      <button
+        type="submit"
+        id="submit"
+        class="btn btn-lg btn-custom btn-dark btn-block"
+      >
+        Sign In
+      </button>
+    </div>
+  </div>
+</form>
+<p>{{ token }}</p>

@@ -1,0 +1,236 @@
+<form
+  #sortform="ngForm"
+  (ngSubmit)="onSortPost(sortform)"
+  class="form-horizontal"
+  role="form"
+>
+  <div class="form-group text-center">
+    <div class="col-sm-10 reg-icon">
+      <span class="fa fa-user fa-3x">Sort Post</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <select
+        class="form-control"
+        id="sortby"
+        [(ngModel)]="sortby"
+        name="sortby"
+      >
+        <option value="number_of_likes">Number of Likes</option>
+        <option value="date_of_creation">Date of Creation</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group" *ngIf="sortby === 'number_of_likes'">
+    <div class="col-sm-10">
+      <input
+        type="number"
+        class="form-control"
+        id="likes"
+        [(ngModel)]="likes"
+        name="likes"
+        placeholder="Number of Likes"
+      />
+    </div>
+  </div>
+  <div class="form-group" *ngIf="sortby === 'date_of_creation'">
+    <div class="col-sm-10">
+      <input
+        type="date"
+        class="form-control"
+        id="date"
+        [(ngModel)]="date"
+        name="date"
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <button type="submit" class="btn btn-info">
+        <span class="glyphicon glyphicon-share-alt"></span> Sort
+      </button>
+    </div>
+  </div>
+</form>
+
+<!-- <form
+  #addform="ngForm"
+  (ngSubmit)="onAddPost(addform)"
+  class="form-horizontal"
+  role="form"
+>
+  <div class="form-group text-center">
+    <div class="col-sm-10 reg-icon">
+      <span class="fa fa-user fa-3x">Add Post</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <input
+        type="text"
+        class="form-control"
+        id="Content"
+        [(ngModel)]="addPosts"
+        name="content"
+        placeholder="Content"
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <button type="submit" class="btn btn-info">
+        <span class="glyphicon glyphicon-share-alt"></span>
+        Register
+      </button>
+    </div>
+  </div>
+</form>
+<br />
+<br />
+<form
+  #updateform="ngForm"
+  (ngSubmit)="onUpdatePost(updateform)"
+  class="form-horizontal"
+  role="form"
+>
+  <div class="form-group text-center">
+    <div class="col-sm-10 reg-icon">
+      <span class="fa fa-user fa-3x">Update Post</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <input
+        type="text"
+        class="form-control"
+        id="Content"
+        [(ngModel)]="content"
+        name="content"
+        placeholder="Content"
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <button type="submit" class="btn btn-info">
+        <span class="glyphicon glyphicon-share-alt"></span>
+        Update
+      </button>
+    </div>
+  </div>
+</form>
+<br />
+<br /> -->
+
+<div class="container">
+  <div *ngFor="let post of posts" class="post">
+    <div class="header">
+      <img
+        src="assets/images/user-icon.png"
+        class="avatar"
+        alt="user profile image"
+      />
+      <div class="meta">
+        <div class="title">
+          <b>{{ "User Id : " + post.id }}</b>
+        </div>
+      </div>
+      <a class="post-groupName" [routerLink]="['/group', post.group_id]">
+        {{ "Group: " + post.groupName }}</a
+      >
+      <a [routerLink]="['/posts', post.id]">{{ "Post: " + post.content }}</a>
+    </div>
+    <div class="body">
+      <img src="{{ post.id }}" class="post-image" />
+      <p>{{ post.content }}</p>
+      <div class="stats">
+        <button class="btn btn-primary" (click)="likePost(post)">Like</button>
+        <p class="btn">{{ post.numberOfLikes }}</p>
+        <button class="btn btn-info" (click)="disLikePost(post)">
+          Dislike
+        </button>
+        <button class="btn btn-danger redbtn" (click)="toggleReportList()">
+          ...
+        </button>
+        <div *ngIf="showReportList" class="report-list">
+          <select [(ngModel)]="selectedReportOption">
+            <option *ngFor="let option of reportOptions" [value]="option">
+              {{ option }}
+            </option>
+          </select>
+          <button
+            class="btn btn-danger redbtn"
+            (click)="report(selectedReportOption, post)"
+          >
+            Report
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="kffd">
+      <form
+        #sortform="ngForm"
+        (ngSubmit)="onSortComment1(sortform)"
+        class="form-horizontal"
+        role="form"
+      >
+        <div class="form-group text-center">
+          <div class="col-sm-10 reg-icon">
+            <span class="fa fa-user fa-3x">Sort Comment</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-10">
+            <select
+              class="form-control"
+              id="sortby"
+              [(ngModel)]="sortby1"
+              name="sortby"
+            >
+              <option value="latest_to_earliest">Latest to Earliest</option>
+              <option value="earliest_to_latest">Earliest to Latest</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="start_date" class="col-sm-2 control-label"
+            >Start Date:</label
+          >
+          <div class="col-sm-10">
+            <input
+              type="date"
+              class="form-control"
+              id="start_date"
+              [(ngModel)]="start_date"
+              name="start_date"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="end_date" class="col-sm-2 control-label">End Date:</label>
+          <div class="col-sm-10">
+            <input
+              type="date"
+              class="form-control"
+              id="end_date"
+              [(ngModel)]="end_date"
+              name="end_date"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-10">
+            <button type="submit" class="btn btn-info">
+              <span class="glyphicon glyphicon-share-alt"></span> Sort
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="footer">
+      <app-comments curentUserId="1" postId="{{ post.id }}"></app-comments>
+    </div>
+  </div>
+</div>
+<router-outlet></router-outlet>

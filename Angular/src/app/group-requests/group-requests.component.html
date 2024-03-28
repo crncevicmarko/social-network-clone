@@ -1,0 +1,16 @@
+<table class="user-table">
+  <tr>
+    <th>Date</th>
+    <th>User Id</th>
+    <th>Group Id</th>
+  </tr>
+  <tr *ngFor="let user of users">
+    <td>{{ user.createdAt }}</td>
+    <td>{{ user.user_id }}</td>
+    <td>{{ user.group_id }}</td>
+    <td>
+      <button (click)="button1(user.id)">Accept</button>
+    </td>
+    <td><button (click)="decline(user.id)">Decline</button></td>
+  </tr>
+</table>

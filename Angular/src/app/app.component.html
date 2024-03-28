@@ -1,0 +1,136 @@
+<li>
+  <a routerLink="/posts" routerLinkActive="active" ariaCurrentWhenActive="page"
+    >Posts</a
+  >
+</li>
+<li>
+  <a routerLink="/groups" routerLinkActive="active" ariaCurrentWhenActive="page"
+    >Groups</a
+  >
+</li>
+<li>
+  <a routerLink="login" routerLinkActive="active" ariaCurrentWhenActive="page"
+    >Login</a
+  >
+</li>
+<li>
+  <a routerLink="signin" routerLinkActive="active" ariaCurrentWhenActive="page"
+    >SignIn</a
+  >
+</li>
+
+<li>
+  <a routerLink="/user" routerLinkActive="active" ariaCurrentWhenActive="page"
+    >User</a
+  >
+</li>
+<li>
+  <a routerLink="/users" routerLinkActive="active" ariaCurrentWhenActive="page"
+    >Users</a
+  >
+</li>
+<li *ngIf="!IsUserAdmin && isLoggedIn">
+  <a
+    routerLink="/friendRequests"
+    routerLinkActive="active"
+    ariaCurrentWhenActive="page"
+    >Friend Requests</a
+  >
+</li>
+<li *ngIf="!IsUserAdmin && isLoggedIn">
+  <a
+    routerLink="/groupRequest"
+    routerLinkActive="active"
+    ariaCurrentWhenActive="page"
+    >Group Requests</a
+  >
+</li>
+<button *ngIf="isLoggedIn" (click)="logout()">LogOut</button>
+<!-- <app-user></app-user> -->
+<router-outlet></router-outlet>
+<!-- <app-chpsform></app-chpsform> -->
+<!-- <app-reports></app-reports> -->
+<!-- <app-comments curentUserId="1"></app-comments> -->
+<!-- 
+<p>{{ userDto.firstName }}</p>
+<form
+  #signupform="ngForm"
+  (ngSubmit)="onSignUpPost(signupform)"
+  class="form-horizontal"
+  class="form-horizontal"
+  role="form"
+>
+  <div class="form-group text-center">
+    <div>
+      <span>Sign up</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <input
+        type="text"
+        class="form-control"
+        id="Username"
+        name="username"
+        ngModel
+        placeholder="Username"
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <input
+        type="text"
+        class="form-control"
+        id="inputPassword3"
+        name="password"
+        ngModel
+        placeholder="Password"
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        name="firstName"
+        ngModel
+        placeholder="Frist Name"
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        name="lastName"
+        ngModel
+        placeholder="Last Name"
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <input
+        type="text"
+        class="form-control"
+        id="inputEmail3"
+        name="email"
+        ngModel
+        placeholder="Email"
+      />
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10">
+      <button type="submit" class="btn btn-info">
+        <span class="glyphicon glyphicon-share-alt"></span>
+        Register
+      </button>
+    </div>
+  </div>
+</form> -->

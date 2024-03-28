@@ -1,0 +1,33 @@
+.comment-right-part {
+  float: right;
+}
+.comment {
+  display: flex;
+  align-items: top;
+  margin-top: 10px;
+}
+
+.comment-image-container {
+  margin-right: 10px;
+}
+
+.comment-author {
+  font-size: medium;
+  color: blue;
+}
+
+.comment-actions {
+  display: flex;
+}
+
+.comment-action {
+  margin-right: 10px;
+}
+
+.replies {
+  align-self: flex-end;
+}
+
+.redbtn {
+  margin-left: 40px;
+}
