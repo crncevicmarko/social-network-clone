@@ -22,7 +22,7 @@ export class UserComponent {
     private gropService: GroupService
   ) {
     this.getUserById();
-    this.getAllGroups();
+    // this.getAllGroups();
   }
 
   getUserById() {

@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<html>
-  <head> </head>
-  <body>
-    <div class="container">
-      <h1>User Personal Data</h1>
-      <form #submit="ngForm" (ngSubmit)="signInForm(submit)">
-        <div>
+<!-- user-personal-data.component.html -->
+<div class="container">
+  <div class="row wider-space">
+    <!-- Left Side Form -->
+    <div class="col-md-6">
+      <h1 class="mt-4">User Personal Data</h1>
+      <form #submit1="ngForm" (ngSubmit)="signInForm(submit1)" class="mt-4">
+        <div class="form-group">
           <input
             type="text"
             hidden
@@ -14,54 +14,61 @@
             name="id"
           />
         </div>
-        <div>
+        <div class="form-group">
           <label for="username">Username:</label>
           <input
             type="text"
             [(ngModel)]="logedUser.username"
             id="username"
             name="username"
+            class="form-control"
           />
         </div>
-        <div>
+        <div class="form-group">
           <label for="firstName">First Name:</label>
           <input
             type="text"
             [(ngModel)]="logedUser.firstName"
             id="firstName"
             name="firstName"
+            class="form-control"
           />
         </div>
-        <div>
+        <div class="form-group">
           <label for="lastName">Last Name:</label>
           <input
             type="text"
             [(ngModel)]="logedUser.lastName"
             id="lastName"
             name="lastName"
+            class="form-control"
           />
         </div>
-        <div>
+        <div class="form-group">
           <label for="email">Email:</label>
           <input
             type="email"
             [(ngModel)]="logedUser.email"
             id="email"
             name="email"
+            class="form-control"
           />
         </div>
-        <button>Submit</button>
+        <button class="btn btn-primary mt-3">Submit</button>
       </form>
     </div>
-    <app-chpsform></app-chpsform>
 
-    <table class="user-table">
-      <tr>
-        <th>Group Name</th>
-      </tr>
-      <tr *ngFor="let group of groups">
-        <td>{{ group.name }}</td>
-      </tr>
-    </table>
-  </body>
-</html>
+    <!-- Right Side Content -->
+    <div class="col-md-6">
+      <app-chpsform></app-chpsform>
+    </div>
+  </div>
+  <!-- <table class="user-table mt-3">
+    <tr>
+      <th>Group Name</th>
+    </tr>
+    <tr *ngFor="let group of groups">
+      <td>{{ group.name }}</td>
+    </tr>
+  </table> -->
+</div>

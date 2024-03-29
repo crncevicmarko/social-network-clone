@@ -1,44 +1,51 @@
-<form
-  #loginFrom="ngForm"
-  (ngSubmit)="login(loginFrom)"
-  method="post"
-  action="#"
->
-  <div class="row">
-    <div class="col-12">
-      <div class="form-group position-relative">
-        <span class="zmdi zmdi-account"></span>
-        <input
-          type="text"
-          class="form-control"
-          ngModel
-          name="username"
-          placeholder="Username"
-        />
+<div class="container-fluid">
+  <div
+    class="row justify-content-center align-items-center"
+    style="height: 50vh"
+  >
+    <div class="col-md-4">
+      <div class="login-container">
+        <form
+          #loginForm="ngForm"
+          (ngSubmit)="login(loginForm)"
+          method="post"
+          action="#"
+          class="login-form"
+        >
+          <div class="form-group">
+            <div class="row">
+              <div class="col-sm-12">
+                <h1>Log In</h1>
+              </div>
+            </div>
+            <br />
+            <label for="username">Username</label>
+            <input
+              type="text"
+              class="form-control"
+              ngModel
+              name="username"
+              id="username"
+              placeholder="Enter username"
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              ngModel
+              name="password"
+              id="password"
+              placeholder="Password"
+            />
+          </div>
+          <br />
+          <button type="submit" class="btn btn-primary btn-block">
+            Log In
+          </button>
+        </form>
       </div>
-    </div>
-    <div class="col-12">
-      <div class="form-group position-relative">
-        <span class="zmdi zmdi-email"></span>
-        <input
-          type="password"
-          id="password"
-          ngModel
-          name="password"
-          class="form-control"
-          placeholder="Password"
-        />
-      </div>
-    </div>
-    <div class="col-12 mt-30">
-      <button
-        type="submit"
-        id="submit"
-        class="btn btn-lg btn-custom btn-dark btn-block"
-      >
-        Sign In
-      </button>
     </div>
   </div>
-</form>
-<p>{{ token }}</p>
+</div>

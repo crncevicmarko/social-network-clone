@@ -1,67 +1,114 @@
-<form
-  #group="ngForm"
-  (ngSubmit)="addGroup(group)"
-  class="form-horizontal"
-  role="form"
->
-  <div>
-    <div>
-      <h1>Create Group</h1>
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-10">
-      <input type="email" name="name" ngModel placeholder="Name Of The Group" />
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-10">
-      <input type="text" name="description" ngModel placeholder="Description" />
-    </div>
-  </div>
-  <br />
-  <div class="form-group">
-    <div class="col-sm-10">
-      <button type="submit" class="btn btn-info">
-        <span class="glyphicon glyphicon-share-alt"></span>
-        Create
-      </button>
-    </div>
-  </div>
-</form>
-<br />
-<button (click)="allGroups()">GetAllGroups</button>
-<br />
+<div class="container">
+  <div
+    class="row justify-content-center align-items-center"
+    style="height: 60px"
+  >
+    <form
+      #group="ngForm"
+      (ngSubmit)="addGroup(group)"
+      class="form-horizontal border p-4"
+      role="form"
+    >
+      <div>
+        <div>
+          <h1>Create Group</h1>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Name Of The Group</label>
+        <div class="col-sm-2">
+          <input
+            type="text"
+            class="form-control"
+            name="name"
+            ngModel
+            placeholder="Name Of The Group"
+          />
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Description</label>
+        <div class="col-sm-4">
+          <input
+            type="text"
+            class="form-control"
+            name="description"
+            ngModel
+            placeholder="Description"
+          />
+        </div>
+      </div>
 
-<table>
-  <tr>
-    <th>Group Name</th>
-    <th>Group Description</th>
-    <th *ngIf="logedInUser.username === 'admin'">Edit</th>
-    <th *ngIf="logedInUser.username === 'admin'">Suspend Group</th>
-  </tr>
-  <tr *ngFor="let group of groups">
-    <th><input type="text" value="{{ group.name }}" /></th>
-    <th>
-      <input type="text" value="{{ group.description }}" />
-    </th>
-    <th *ngIf="logedInUser.username === 'admin'"></th>
-    <th>
-      <button
-        *ngIf="logedInUser.username === 'admin'"
-        (click)="deleteGroup(group.id)"
-      >
-        Suspend
+      <br />
+      <div class="form-group">
+        <div class="col-sm-10">
+          <button type="submit" class="btn btn-success">
+            <span class="glyphicon glyphicon-share-alt"></span>
+            Create
+          </button>
+        </div>
+      </div>
+    </form>
+    <div>
+      <button class="btn btn-secondary" (click)="allGroups()">
+        GetAllGroups
       </button>
-    </th>
-    <th *ngIf="logedInUser.username === 'user'">
-      <button (click)="join(group.id)">Join</button>
-    </th>
-    <th>
-      <button (click)="view(group.id)">View Group</button>
-    </th>
-  </tr>
-</table>
-<div>
-  <div>{{ group.name }}</div>
+    </div>
+    <br />
+    <br />
+
+    <table class="table table-striped table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th>Group Name</th>
+          <th>Group Description</th>
+          <th *ngIf="logedInUser.username === 'admin'">Edit</th>
+          <th *ngIf="logedInUser.username === 'admin'">Suspend Group</th>
+          <th *ngIf="logedInUser.username === 'user'">Join</th>
+          <th>View Group</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let group of groups">
+          <td>
+            <input
+              type="text"
+              class="form-control"
+              [value]="group.name"
+              readonly
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              class="form-control"
+              [value]="group.description"
+              readonly
+            />
+          </td>
+          <td *ngIf="logedInUser.username === 'admin'"></td>
+          <td>
+            <button
+              *ngIf="logedInUser.username === 'admin'"
+              class="btn btn-danger"
+              (click)="deleteGroup(group.id)"
+              [disabled]="isActiveGroup(group.id)"
+            >
+              Suspend
+            </button>
+          </td>
+          <td *ngIf="logedInUser.username === 'user'">
+            <button class="btn btn-primary" (click)="join(group.id)">
+              Join
+            </button>
+          </td>
+          <td>
+            <button class="btn btn-info" (click)="view(group.id)">
+              View Group
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

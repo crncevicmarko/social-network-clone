@@ -4,6 +4,7 @@ import { AuthService } from '../service';
 import { NgForm } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserDTO } from '../model/userDTO';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,10 @@ export class LoginComponent {
   // @Output() logedUser = new EventEmitter<UserDTO>();
   public logedUser!: UserDTO;
 
-  constructor(private autentificationService: AuthService) {}
+  constructor(
+    private autentificationService: AuthService,
+    private router: Router
+  ) {}
 
   public login(loginFrom: NgForm) {
     this.autentificationService.login(loginFrom.value).subscribe(
@@ -28,6 +32,8 @@ export class LoginComponent {
         this.autentificationService.access_token = this.token;
         this.autentificationService.role = response.role;
         this.getUserByUserName(loginFrom.value.username);
+        alert('Uspesno ste se ulogovali');
+        this.router.navigate(['/posts']);
       },
       (error: HttpErrorResponse) => {
         if (error.error instanceof ProgressEvent) {

@@ -1,46 +1,106 @@
-<form
-  #signIn="ngForm"
-  (ngSubmit)="signInForm(signIn)"
-  class="form-horizontal"
-  role="form"
->
-  <div>
-    <div>
-      <h1>Sign In</h1>
+<div class="container">
+  <div
+    class="row justify-content-center align-items-center"
+    style="height: 60vh"
+  >
+    <div class="col-md-6">
+      <form
+        #signIn="ngForm"
+        (ngSubmit)="signInForm(signIn)"
+        class="form-horizontal border p-4"
+        role="form"
+      >
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-12">
+              <h1>Sign Up</h1>
+            </div>
+          </div>
+          <br />
+          <div class="form-group row">
+            <label for="username" class="col-sm-3 col-form-label"
+              >Username</label
+            >
+            <div class="col-sm-4">
+              <input
+                type="email"
+                name="username"
+                ngModel
+                class="form-control"
+                id="username"
+                placeholder="Username"
+              />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="password" class="col-sm-3 col-form-label"
+              >Password</label
+            >
+            <div class="col-sm-4">
+              <input
+                type="password"
+                name="password"
+                ngModel
+                class="form-control"
+                id="password"
+                placeholder="Password"
+              />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="firstName" class="col-sm-3 col-form-label"
+              >First Name</label
+            >
+            <div class="col-sm-4">
+              <input
+                type="text"
+                name="firstName"
+                ngModel
+                class="form-control"
+                id="firstName"
+                placeholder="First Name"
+              />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="lastName" class="col-sm-3 col-form-label"
+              >Last Name</label
+            >
+            <div class="col-sm-4">
+              <input
+                type="text"
+                name="lastName"
+                ngModel
+                class="form-control"
+                id="lastName"
+                placeholder="Last Name"
+              />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="email" class="col-sm-3 col-form-label">Email</label>
+            <div class="col-sm-4">
+              <input
+                type="email"
+                name="email"
+                ngModel
+                class="form-control"
+                id="email"
+                placeholder="Email"
+              />
+            </div>
+          </div>
+          <br />
+          <div class="form-group row">
+            <div class="col-sm-10">
+              <button type="submit" class="btn btn-info">
+                <span class="glyphicon glyphicon-share-alt"></span>
+                Sign Up
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
-  <div class="form-group">
-    <div class="col-sm-10">
-      <input type="email" name="username" ngModel placeholder="Username" />
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-10">
-      <input type="password" name="password" ngModel placeholder="Password" />
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-10">
-      <input type="text" name="firstName" ngModel placeholder="First Name" />
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-10">
-      <input type="text" name="lastName" ngModel placeholder="Last Name" />
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-10">
-      <input type="email" name="email" ngModel placeholder="Email" />
-    </div>
-  </div>
-  <br />
-  <div class="form-group">
-    <div class="col-sm-10">
-      <button type="submit" class="btn btn-info">
-        <span class="glyphicon glyphicon-share-alt"></span>
-        Sign In
-      </button>
-    </div>
-  </div>
-</form>
+</div>

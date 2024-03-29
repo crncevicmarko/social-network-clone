@@ -35,11 +35,14 @@ export class GroupsComponent {
   public addGroup(group: NgForm) {
     this.groupService.createGroup(group.value).subscribe(
       (response: GroupDTO) => {
+        alert('Uspesno ste kreirali grupu');
         this.group = response;
         this.reloadPage;
+        group.resetForm();
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
+        group.resetForm();
       }
     );
   }
@@ -49,10 +52,10 @@ export class GroupsComponent {
     this.groupService.getGroups().subscribe(
       (response: GroupDTO[]) => {
         for (var val of response) {
-          console.log(val.suspended);
+          console.log('IsSuspended:', val.suspended);
           if (val.suspended == true) {
             this.activeGroups.push(val);
-            console.log(this.activeGroups);
+            console.log('Active Groups: ', this.activeGroups);
           }
         }
         this.groups = response;
@@ -61,6 +64,10 @@ export class GroupsComponent {
         alert(error.message);
       }
     );
+  }
+
+  public isActiveGroup(id: number): boolean {
+    return this.activeGroups.some((group) => group.id === id);
   }
 
   public updateGroup(id: number, group: GroupDTO) {
@@ -79,7 +86,8 @@ export class GroupsComponent {
   public deleteGroup(id: number) {
     this.groupService.delete(id).subscribe(
       (response: void) => {
-        alert('Uspesno ste obrisali grupu');
+        console.log('Response: ', response);
+        alert('Uspesno ste suspendovali grupu');
         this.allGroups();
       },
       (error: HttpErrorResponse) => {

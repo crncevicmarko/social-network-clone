@@ -93,7 +93,8 @@ public class GroupController {
 	
 	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@PostMapping
-	public ResponseEntity<Group> save(Principal user, @RequestBody Group group){
+	public ResponseEntity<Group> save(Principal user, @RequestBody Group group){ // primamo usera iz tokena verovatno i celu grupu
+		// moramo da ubacimo korinsika u grupu i sacuvamo
 		User user1 = userService.findByUsername(user.getName());
 		group.setCreationDate(createdAt);
 		group.setSuspended(false);
@@ -109,26 +110,42 @@ public class GroupController {
 	
 //	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@PutMapping("/update/{id}")
-	public ResponseEntity<Group> update(Principal user, @PathVariable int id, @RequestBody Group group){
+	public ResponseEntity<GroupDTO> update(Principal user, @PathVariable int id, @RequestBody Group group){
 		try {
 			groupService.update(id, group.getDescription());
 		} catch (Exception e) {
 			System.out.println(e);
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-		return null;
+		Group newGroup = groupService.findById(id);
+		GroupDTO groupDTO = new GroupDTO();
+		groupDTO.setId(newGroup.getId());
+		groupDTO.setName(newGroup.getName());
+		groupDTO.setDescription(newGroup.getDescription());
+		groupDTO.setSuspended(newGroup.isSuspended());
+		groupDTO.setSuspendedReason(newGroup.getSuspendedReason());
+		groupDTO.setUser_id(newGroup.getUser().getId());
+		return new ResponseEntity<GroupDTO>(groupDTO, HttpStatus.OK);
 	}
 	
 	
 	@PreAuthorize("hasAnyRole('GROUPADMIN','ADMIN')")
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<Group> delete(@PathVariable int id){
+	public ResponseEntity<GroupDTO> delete(@PathVariable int id){
 		try {
 			groupService.delete(id);	
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(null, HttpStatus.OK);
+		Group newGroup = groupService.findById(id);
+		GroupDTO groupDTO = new GroupDTO();
+		groupDTO.setId(newGroup.getId());
+		groupDTO.setName(newGroup.getName());
+		groupDTO.setDescription(newGroup.getDescription());
+		groupDTO.setSuspended(newGroup.isSuspended());
+		groupDTO.setSuspendedReason(newGroup.getSuspendedReason());
+		groupDTO.setUser_id(newGroup.getUser().getId());
+		return new ResponseEntity<GroupDTO>(groupDTO, HttpStatus.OK);
 	}
 
 }

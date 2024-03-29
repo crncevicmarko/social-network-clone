@@ -1,1 +1,78 @@
-<p>header works!</p>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="login"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          >Log In</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="signin"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          >Sign Up</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="/posts"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          >Posts</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="/groups"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          >Groups</a
+        >
+      </li>
+
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="/user"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          >User</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          routerLink="/users"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          >Users</a
+        >
+      </li>
+      <!-- <li *ngIf="!IsUserAdmin && isLoggedIn">
+              <a
+                routerLink="/friendRequests"
+                routerLinkActive="active"
+                ariaCurrentWhenActive="page"
+                >Friend Requests</a
+              >
+            </li>
+            <li *ngIf="!IsUserAdmin && isLoggedIn">
+              <a
+                routerLink="/groupRequest"
+                routerLinkActive="active"
+                ariaCurrentWhenActive="page"
+                >Group Requests</a
+              >
+            </li>
+            <button *ngIf="isLoggedIn" (click)="logout()">LogOut</button> -->
+    </ul>
+  </div>
+</nav>
