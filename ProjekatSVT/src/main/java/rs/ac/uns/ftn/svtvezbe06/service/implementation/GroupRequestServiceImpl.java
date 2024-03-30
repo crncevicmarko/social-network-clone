@@ -42,4 +42,10 @@ public class GroupRequestServiceImpl implements GroupRequestService{
 		return groupReguestRepository.findAllByUserId(id);
 	}
 
+	@Override
+	@Transactional
+	public List<GroupRequest> findAllSentAndApprovedGroupRequestsByUserId(int id) {
+		return groupReguestRepository.findAllSentAndApprovedGroupRequestsByUserId(id);
+	}
+
 }

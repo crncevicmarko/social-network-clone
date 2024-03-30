@@ -96,4 +96,27 @@ public class GroupRequestController {
 		}
 	}
 	
+	@GetMapping("/allSent")
+	public ResponseEntity<List<GroupRequestDTO>> getAllSentAndApprovedGroupRequestsByUserId (Principal user) {
+		User loggedUser = userService.findByUsername(user.getName());
+		List<GroupRequest> requests = groupRequestService.findAllSentAndApprovedGroupRequestsByUserId(loggedUser.getId());
+		List<GroupRequestDTO> newList = new ArrayList<GroupRequestDTO>();
+		for(GroupRequest groupRequest : requests) {
+			GroupRequestDTO groupReques = new GroupRequestDTO();
+			groupReques.setId(groupRequest.getId());
+			groupReques.setApproved(groupRequest.getApproved());
+			groupReques.setCreatedAt(groupRequest.getCreatedAt().toString());
+			groupReques.setRequestAcceptedOrDeniedAt(groupRequest.getRequestAcceptedOrDeniedAt());
+			groupReques.setUser_id(groupRequest.getUser().getId());
+			groupReques.setGroup_id(groupRequest.getGroup().getId());
+			newList.add(groupReques);
+		}
+		if(newList == null) {
+			return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+		}
+		else {
+			return new ResponseEntity<List<GroupRequestDTO>>(newList,HttpStatus.OK);
+		}
+	}
+	
 }

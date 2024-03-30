@@ -18,6 +18,7 @@ export class GroupsComponent {
   public group!: GroupDTO;
   public desription!: string;
   public activeGroups!: GroupDTO[];
+  public otherGroups!: any[];
   public logedInUser!: UserDTO;
 
   constructor(
@@ -41,14 +42,30 @@ export class GroupsComponent {
         group.resetForm();
       },
       (error: HttpErrorResponse) => {
-        alert(error.message);
-        group.resetForm();
+        if (error.status === 406) {
+          alert('Form cant be empty');
+        } else {
+          alert(error.message);
+          group.resetForm();
+        }
       }
     );
   }
 
   public allGroups() {
     this.activeGroups = [];
+    this.otherGroups = [];
+    this.groupService.getAllSent().subscribe(
+      (response: GroupDTO[]) => {
+        for (var val of response) {
+          console.log('Groupe Request: ', val);
+          this.otherGroups.push(val);
+        }
+      },
+      (error: HttpErrorResponse) => {
+        alert(error.message);
+      }
+    );
     this.groupService.getGroups().subscribe(
       (response: GroupDTO[]) => {
         for (var val of response) {
@@ -68,6 +85,10 @@ export class GroupsComponent {
 
   public isActiveGroup(id: number): boolean {
     return this.activeGroups.some((group) => group.id === id);
+  }
+
+  public joinableGroup(id: number): boolean {
+    return this.otherGroups.some((group) => group.group_id === id);
   }
 
   public updateGroup(id: number, group: GroupDTO) {

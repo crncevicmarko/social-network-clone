@@ -23,6 +23,7 @@ const routes: Routes = [
   { path: 'users', component: UsersComponent },
   { path: 'friendRequests', component: FriendRequestsComponent },
   { path: 'groupRequest', component: GroupRequestsComponent },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

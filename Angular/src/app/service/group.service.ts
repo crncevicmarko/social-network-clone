@@ -44,4 +44,11 @@ export class GroupService {
   public joinGroup(id: number): Observable<void> {
     return this.http.post<void>(`${this.config.group_request}/${id}`, {});
   }
+
+  public getAllSent(): Observable<any> {
+    return this.http.get<any>(
+      `${'http://localhost:8080/groupRequests/allSent'}`,
+      {}
+    );
+  }
 }

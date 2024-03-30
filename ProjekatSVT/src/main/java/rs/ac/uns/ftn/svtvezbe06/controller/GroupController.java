@@ -95,6 +95,9 @@ public class GroupController {
 	@PostMapping
 	public ResponseEntity<Group> save(Principal user, @RequestBody Group group){ // primamo usera iz tokena verovatno i celu grupu
 		// moramo da ubacimo korinsika u grupu i sacuvamo
+        if(group.getName().equals("") || group.getDescription().equals("")){
+            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
+        }
 		User user1 = userService.findByUsername(user.getName());
 		group.setCreationDate(createdAt);
 		group.setSuspended(false);

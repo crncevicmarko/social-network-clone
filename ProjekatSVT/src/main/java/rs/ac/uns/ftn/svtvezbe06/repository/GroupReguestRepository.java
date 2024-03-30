@@ -33,4 +33,8 @@ public interface GroupReguestRepository extends JpaRepository<GroupRequest, Inte
 	@Modifying
 	@Query("select r from GroupRequest r where r.approved IS null and r.user.id = :id")
 	public List<GroupRequest> findAllByUserId(int id);
+
+	@Modifying
+	@Query("SELECT r FROM GroupRequest r WHERE r.user.id = :id AND (r.approved = true OR r.approved IS NULL)")
+	public List<GroupRequest> findAllSentAndApprovedGroupRequestsByUserId(int id);
 }
