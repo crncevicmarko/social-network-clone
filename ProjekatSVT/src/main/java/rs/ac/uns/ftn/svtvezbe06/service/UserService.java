@@ -22,6 +22,6 @@ public interface UserService {
     void unBlock(int id);
 
     List<User> findAllByIfUserIsUser(int id);
-
+    String changePassword(String oldPassword, String newPassword);
     List<User> seach(String username);
 }

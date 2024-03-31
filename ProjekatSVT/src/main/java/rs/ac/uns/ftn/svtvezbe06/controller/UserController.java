@@ -26,10 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import rs.ac.uns.ftn.svtvezbe06.model.dto.GroupDTO;
-import rs.ac.uns.ftn.svtvezbe06.model.dto.JwtAuthenticationRequest;
-import rs.ac.uns.ftn.svtvezbe06.model.dto.UserDTO;
-import rs.ac.uns.ftn.svtvezbe06.model.dto.UserTokenState;
+import rs.ac.uns.ftn.svtvezbe06.model.dto.*;
 import rs.ac.uns.ftn.svtvezbe06.model.entity.User;
 import rs.ac.uns.ftn.svtvezbe06.security.TokenUtils;
 import rs.ac.uns.ftn.svtvezbe06.service.UserService;
@@ -59,6 +56,23 @@ public class UserController {
         this.tokenUtils = tokenUtils;
     }
     */
+
+//    @PreAuthorize("hasRole('USER', 'ADMIN')")
+    @PatchMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
+        if(!request.getConfirmPassword().equals(request.getNewPassword())){
+            return ResponseEntity.badRequest().body("Confirm password must be same as New Password");
+        }
+        String response = userService.changePassword(request.getOldPassword(), request.getNewPassword());
+        if (response.equals("Old password is incorrect.")){
+            return ResponseEntity.badRequest().body("Old password is incorrect.");
+        }
+        else if (response.equals("Cant save password.")) {
+            return  ResponseEntity.internalServerError().body("Cant save password.");
+        }
+        return ResponseEntity.ok("Password changed successfully.");
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<UserDTO> create(@RequestBody @Validated UserDTO newUser){
 

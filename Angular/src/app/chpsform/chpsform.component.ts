@@ -5,6 +5,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { AuthService } from '../service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-chpsform',
@@ -14,7 +16,10 @@ import {
 export class ChpsformComponent {
   passwordForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private userService: AuthService
+  ) {
     this.passwordForm = this.formBuilder.group(
       {
         oldPassword: ['', Validators.required],
@@ -38,9 +43,24 @@ export class ChpsformComponent {
 
   onSubmit() {
     if (this.passwordForm.valid) {
-      // Handle form submission
-      // Call your API to change the password
-      alert('Uspesno ste izmenili lozinku');
+      this.userService
+        .changePassword(
+          this.passwordForm.value.oldPassword,
+          this.passwordForm.value.newPassword,
+          this.passwordForm.value.confirmPassword
+        )
+        .subscribe(
+          (result: any) => {},
+          (error: HttpErrorResponse) => {
+            if (error.status === 400) {
+              alert('Stara lozinka je pogresna');
+            } else if (error.status === 500) {
+              alert('Ne mozemo da sacuvamo lozinku');
+            } else if (error.status === 200) {
+              alert('Ok');
+            }
+          }
+        );
     } else {
       alert(
         'Nova sifra mora da bude minimum 8 karaktera, makar jedno veliko slovo, broj i karakter'
@@ -54,10 +74,10 @@ export class ChpsformComponent {
 }
 
 function passwordMatchValidator(
-  control: AbstractControl
+  formGroup: FormGroup
 ): { [key: string]: boolean } | null {
-  const newPassword = control.get('newPassword');
-  const confirmPassword = control.get('confirmPassword');
+  const newPassword = formGroup.get('newPassword');
+  const confirmPassword = formGroup.get('confirmPassword');
 
   if (
     newPassword &&

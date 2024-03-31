@@ -32,6 +32,10 @@ public interface UserRepository extends JpaRepository<User, Integer>{
 	public List<User> findAllByIfUserIsUser(int id);
 
 	@Modifying
+	@Query("update User u set u.password = :newPassword where u.id = :id")
+	void changePassword(String newPassword, Integer id);
+
+	@Modifying
 	@Query("SELECT u FROM User u WHERE u.username LIKE %:username%")
 	List<User> seach(String username);
 

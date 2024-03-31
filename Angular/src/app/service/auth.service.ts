@@ -68,6 +68,21 @@ export class AuthService {
     );
   }
 
+  public changePassword(
+    oldPassword: string,
+    newPassword: string,
+    confirmPassword: string
+  ): Observable<any> {
+    return this.http.patch<any>(
+      `${'http://localhost:8080/users/change-password'}`,
+      {
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+        confirmPassword: confirmPassword,
+      }
+    );
+  }
+
   public findAllFriendRequests(): Observable<FriendRequestDTO[]> {
     return this.http.get<FriendRequestDTO[]>(
       `${this.config.send_friend_request}`

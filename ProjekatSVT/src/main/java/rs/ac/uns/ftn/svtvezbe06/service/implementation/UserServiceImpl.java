@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -99,6 +101,31 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<User> findAllByIfUserIsUser(int id) {
         return userRepository.findAllByIfUserIsUser(id);
+    }
+    @Override
+    @Transactional
+    public String changePassword(String oldPassword, String newPassword) {
+        // Get the currently authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // Find the user by username
+        User user = findByUsername(username);
+
+        // Verify the old password
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return "Old password is incorrect.";
+        }
+
+        // Update the password with the new one
+        user.setPassword(passwordEncoder.encode(newPassword));
+//        userRepository.changePassword(user.getPassword(), user.getId());
+        try {
+            userRepository.changePassword(user.getPassword(), user.getId());
+        } catch (Exception e) {
+            return "Cant save password.";
+        }
+        return "";
     }
 
     @Override
