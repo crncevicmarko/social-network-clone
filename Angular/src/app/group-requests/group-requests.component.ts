@@ -33,7 +33,7 @@ export class GroupRequestsComponent {
       }
     );
   }
-  button1(id: number) {
+  accept(id: number) {
     this.groupRequestService.updateGroupRequests(id, true).subscribe(
       (response: void) => {
         alert('Uspesno ste prihvatili prijateljstvo');

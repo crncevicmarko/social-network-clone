@@ -39,6 +39,7 @@ export class UserComponent {
   signInForm(submit: NgForm) {
     this.userService.update(submit.value).subscribe(
       (response: UserDTO) => {
+        alert('Uspesno ste izmenili podatke');
         this.logedUser = response;
       },
       (error: HttpErrorResponse) => {

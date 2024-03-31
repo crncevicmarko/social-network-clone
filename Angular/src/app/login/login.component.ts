@@ -30,7 +30,7 @@ export class LoginComponent {
         this.loggedUser = response;
         this.token = this.loggedUser.accessToken;
         this.autentificationService.access_token = this.token;
-        this.autentificationService.role = response.role;
+        this.autentificationService.role = response.role; // setovanje role ulogovanog korisnika
         this.getUserByUserName(loginFrom.value.username);
         alert('Uspesno ste se ulogovali');
         this.router.navigate(['/posts']);

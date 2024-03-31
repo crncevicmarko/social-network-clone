@@ -37,7 +37,7 @@
             <td>{{ user.username }}</td>
             <td>{{ user.firstName }}</td>
             <td>{{ user.lastName }}</td>
-            <td>
+            <td *ngIf="IsUserAdmin">
               <button
                 class="btn btn-sm btn-danger"
                 (click)="blockUser(user.id)"
@@ -45,7 +45,7 @@
                 Block
               </button>
             </td>
-            <td>
+            <td *ngIf="IsUserAdmin">
               <button
                 class="btn btn-sm btn-success"
                 (click)="unblockUser(user.id)"
@@ -53,7 +53,7 @@
                 Unblock
               </button>
             </td>
-            <td>
+            <td *ngIf="!IsUserAdmin">
               <button
                 class="btn btn-sm btn-primary"
                 (click)="sendFriendRequest(user.id)"

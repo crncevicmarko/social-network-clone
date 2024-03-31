@@ -22,6 +22,7 @@
             id="username"
             name="username"
             class="form-control"
+            required
           />
         </div>
         <div class="form-group">
@@ -32,6 +33,7 @@
             id="firstName"
             name="firstName"
             class="form-control"
+            required
           />
         </div>
         <div class="form-group">
@@ -42,6 +44,7 @@
             id="lastName"
             name="lastName"
             class="form-control"
+            required
           />
         </div>
         <div class="form-group">
@@ -52,9 +55,12 @@
             id="email"
             name="email"
             class="form-control"
+            required
           />
         </div>
-        <button class="btn btn-primary mt-3">Submit</button>
+        <button class="btn btn-primary mt-3" [disabled]="!submit1.form.valid">
+          Submit
+        </button>
       </form>
     </div>
 

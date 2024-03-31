@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="!isLoggedIn">
         <a
           class="nav-link"
           routerLink="login"
@@ -10,7 +10,7 @@
           >Log In</a
         >
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="!isLoggedIn">
         <a
           class="nav-link"
           routerLink="signin"
@@ -38,16 +38,16 @@
         >
       </li>
 
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="isLoggedIn">
         <a
           class="nav-link"
-          routerLink="/user"
+          routerLink="/profile"
           routerLinkActive="active"
           ariaCurrentWhenActive="page"
-          >User</a
+          >Profile</a
         >
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="isLoggedIn">
         <a
           class="nav-link"
           routerLink="/users"
@@ -56,23 +56,28 @@
           >Users</a
         >
       </li>
-      <!-- <li *ngIf="!IsUserAdmin && isLoggedIn">
-              <a
-                routerLink="/friendRequests"
-                routerLinkActive="active"
-                ariaCurrentWhenActive="page"
-                >Friend Requests</a
-              >
-            </li>
-            <li *ngIf="!IsUserAdmin && isLoggedIn">
-              <a
-                routerLink="/groupRequest"
-                routerLinkActive="active"
-                ariaCurrentWhenActive="page"
-                >Group Requests</a
-              >
-            </li>
-            <button *ngIf="isLoggedIn" (click)="logout()">LogOut</button> -->
+      <li *ngIf="!IsUserAdmin && isLoggedIn">
+        <a
+          class="nav-link"
+          routerLink="/friendRequests"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          >Friend Requests</a
+        >
+      </li>
+
+      <li *ngIf="!IsUserAdmin && isLoggedIn">
+        <a
+          class="nav-link"
+          routerLink="/groupRequest"
+          routerLinkActive="active"
+          ariaCurrentWhenActive="page"
+          >Group Requests</a
+        >
+      </li>
+      <li>
+        <a class="nav-link" *ngIf="isLoggedIn" (click)="logout()"> LogOut </a>
+      </li>
     </ul>
   </div>
 </nav>

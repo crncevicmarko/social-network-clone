@@ -19,6 +19,7 @@ export class UsersComponent {
   }
 
   ngOnInit() {
+    this.logedInUser = this.userService.logedUser;
     this.allUsers();
   }
 
@@ -82,5 +83,10 @@ export class UsersComponent {
         alert(error.message);
       }
     );
+  }
+
+  get IsUserAdmin(): boolean {
+    console.log(this.userService.isLogedUserNameAdmin());
+    return this.userService.isLogedUserNameAdmin();
   }
 }

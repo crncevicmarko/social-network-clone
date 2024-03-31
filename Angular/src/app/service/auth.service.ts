@@ -8,6 +8,7 @@ import { Observable, map } from 'rxjs';
 import { LogedUserDTO } from '../model/logedUser';
 import { UserDTO } from '../model/userDTO';
 import { FriendRequestDTO } from '../model/friendRequestDTO';
+import { UserRole } from '../model/user-role';
 
 @Injectable({
   providedIn: 'root',
@@ -165,6 +166,16 @@ export class AuthService {
       return true;
     } else {
       return false;
+    }
+  }
+
+  getUserRoles(): UserRole[] {
+    if (this.role === 'ADMIN') {
+      return [UserRole.Admin];
+    } else if (this.role === 'USER') {
+      return [UserRole.User];
+    } else {
+      return [];
     }
   }
 }

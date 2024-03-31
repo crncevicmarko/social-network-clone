@@ -21,7 +21,7 @@ public class GroupRequestServiceImpl implements GroupRequestService{
 	@Override
 	@Transactional
 	public List<GroupRequest> findAll(int userId) {
-		return groupReguestRepository.findAll();
+		return groupReguestRepository.findAll(userId);
 	}
 
 	

@@ -4,7 +4,12 @@
 <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()" class="mt-4">
   <div class="form-group">
     <label for="oldPassword">Old Password:</label>
-    <input type="password" id="oldPassword" class="form-control" />
+    <input
+      type="password"
+      id="oldPassword"
+      formControlName="oldPassword"
+      class="form-control"
+    />
   </div>
   <div class="form-group">
     <label for="newPassword">New Password:</label>
@@ -14,6 +19,10 @@
       formControlName="newPassword"
       class="form-control"
     />
+    <div style="color: red" *ngIf="hasError('newPassword', 'pattern')">
+      Nova sifra mora da bude minimum 8 karaktera, makar jedno veliko slovo,
+      broj i karakter
+    </div>
   </div>
   <div class="form-group">
     <label for="confirmPassword">Confirm Password:</label>
@@ -23,6 +32,12 @@
       formControlName="confirmPassword"
       class="form-control"
     />
+    <div
+      style="color: red"
+      *ngIf="hasError('confirmPassword', 'passwordMismatch')"
+    >
+      Lozinke moraju da se podudaraju
+    </div>
   </div>
   <br />
   <button type="submit" class="btn btn-primary">Submit</button>
