@@ -16,7 +16,12 @@ import { UserRole } from './model/user-role';
 
 const routes: Routes = [
   { path: 'posts', component: PostsComponent },
-  { path: 'groups', component: GroupsComponent },
+  {
+    path: 'groups',
+    component: GroupsComponent,
+    canActivate: [RoleGuard],
+    data: { expectedRoles: [UserRole.Admin, UserRole.User] },
+  },
   { path: 'login', component: LoginComponent },
   { path: 'signin', component: SignUpComponent },
   { path: 'group/:id', component: GroupComponent },

@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -90,28 +91,31 @@ public class UserController {
     public ResponseEntity<UserTokenState> createAuthenticationToken(
             @RequestBody JwtAuthenticationRequest authenticationRequest, HttpServletResponse response) {
 
-        // Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
-        // AuthenticationException
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+        try {
+            // Attempt authentication
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
-        // Ukoliko je autentifikacija uspesna, ubaci korisnika u trenutni security
-        // kontekst
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            // If authentication is successful, set the authentication in the security context
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // Kreiraj token za tog korisnika
-        UserDetails user = (UserDetails) authentication.getPrincipal();
-        String jwt = tokenUtils.generateToken(user);
-        int expiresIn = tokenUtils.getExpiredIn();
+            // Create token for the user
+            UserDetails user = (UserDetails) authentication.getPrincipal();
+            String jwt = tokenUtils.generateToken(user);
+            int expiresIn = tokenUtils.getExpiredIn();
 
-        User user1 = userService.findByUsername(authenticationRequest.getUsername());
-        System.out.println(user1.getRole().toString());
-        if(user1.isBlocked() == true){
-            UserTokenState tokenState = new UserTokenState();
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(tokenState);
-        }else{
-            // Vrati token kao odgovor na uspesnu autentifikaciju
-            return ResponseEntity.ok(new UserTokenState(jwt, expiresIn,user1.getRole().toString()));
+            User user1 = userService.findByUsername(authenticationRequest.getUsername());
+            System.out.println(user1.getRole().toString());
+            if (user1.isBlocked()) {
+                UserTokenState tokenState = new UserTokenState();
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(tokenState);
+            } else {
+                // Return token as response for successful authentication
+                return ResponseEntity.ok(new UserTokenState(jwt, expiresIn, user1.getRole().toString()));
+            }
+        } catch (AuthenticationException e) {
+            // If authentication fails, return BadRequest
+            return ResponseEntity.badRequest().build();
         }
     }
 

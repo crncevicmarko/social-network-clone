@@ -68,9 +68,9 @@
         <tr>
           <th>Group Name</th>
           <th>Group Description</th>
-          <th *ngIf="logedInUser.username === 'admin'">Edit</th>
-          <th *ngIf="logedInUser.username === 'admin'">Suspend Group</th>
-          <th *ngIf="logedInUser.username === 'user'">Join</th>
+          <th *ngIf="IsUserAdmin">Edit</th>
+          <th *ngIf="IsUserAdmin">Suspend Group</th>
+          <th *ngIf="!IsUserAdmin">Join</th>
           <th>View Group</th>
         </tr>
       </thead>
@@ -92,20 +92,20 @@
               readonly
             />
           </td>
-          <td *ngIf="logedInUser.username === 'admin'">
+          <td *ngIf="IsUserAdmin">
             <button>Edit</button>
           </td>
-          <td *ngIf="logedInUser.username === 'admin'">
+          <td *ngIf="IsUserAdmin">
             <button
               class="btn btn-danger"
               (click)="deleteGroup(group.id)"
-              [disabled]="isActiveGroup(group.id)"
+              [disabled]="!isActiveGroup(group.id)"
               joinableGroup
             >
               Suspend
             </button>
           </td>
-          <td *ngIf="logedInUser.username === 'user'">
+          <td *ngIf="!IsUserAdmin">
             <button
               class="btn btn-primary"
               (click)="join(group.id)"

@@ -43,7 +43,7 @@ public class GroupController {
 	
 	Date createdAt = new Date(System.currentTimeMillis());
 
-	@PreAuthorize("hasAnyRole('USER','ADMIN')")
+//	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@GetMapping
 	public ResponseEntity<List<GroupDTO>> getAll(){
 		List<Group> lista = groupService.findAll();

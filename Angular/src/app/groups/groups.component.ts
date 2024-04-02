@@ -57,10 +57,12 @@ export class GroupsComponent {
     this.otherGroups = [];
     this.groupService.getAllSent().subscribe(
       (response: GroupDTO[]) => {
+        console.log('User Requests : ', response);
         for (var val of response) {
           console.log('Groupe Request: ', val);
           this.otherGroups.push(val);
         }
+        console.log('Users : ', this.otherGroups);
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -70,7 +72,7 @@ export class GroupsComponent {
       (response: GroupDTO[]) => {
         for (var val of response) {
           console.log('IsSuspended:', val.suspended);
-          if (val.suspended == true) {
+          if (val.suspended == false) {
             this.activeGroups.push(val);
             console.log('Active Groups: ', this.activeGroups);
           }
@@ -87,8 +89,23 @@ export class GroupsComponent {
     return this.activeGroups.some((group) => group.id === id);
   }
 
-  public joinableGroup(id: number): boolean {
-    return this.otherGroups.some((group) => group.group_id === id);
+  public joinableGroup(groupId: number): boolean {
+    const groupExistsInActiveGroups = this.activeGroups.some(
+      (group) => group.id === groupId
+    );
+    const groupExistsInOtherGroups = this.otherGroups.some(
+      (group) => group.group_id === groupId
+    );
+
+    if (!groupExistsInActiveGroups) {
+      return true; // ID doesn't exist in active groups, button should be disabled
+    }
+
+    if (groupExistsInOtherGroups) {
+      return true; // ID exists in other groups, button should be disabled
+    }
+
+    return false; // ID exists in active groups and doesn't exist in other groups, button should be enabled
   }
 
   public updateGroup(id: number, group: GroupDTO) {
@@ -132,5 +149,10 @@ export class GroupsComponent {
         alert(error.message);
       }
     );
+  }
+
+  get IsUserAdmin(): boolean {
+    // console.log(this.userService.isLogedUserNameAdmin());
+    return this.userService.isLogedUserNameAdmin();
   }
 }

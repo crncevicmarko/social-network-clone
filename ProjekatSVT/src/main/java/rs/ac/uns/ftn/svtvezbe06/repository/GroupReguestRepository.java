@@ -20,9 +20,9 @@ public interface GroupReguestRepository extends JpaRepository<GroupRequest, Inte
 	@Modifying
 	@Query("SELECT gr FROM GroupRequest gr " +
 			"INNER JOIN Group g ON gr.group.id = g.id " +
-			"WHERE g.user.id = :userId " +
-			"AND gr.approved IS NULL")
-	public List<GroupRequest> findAll(int userId);
+			"WHERE gr.user.id = :userId and gr.approved = true or gr.approved is null")
+	public List<GroupRequest> findAll(int userId); // vrati sve grupe kojima korisik ne sme da se pridruzi po njegivim prijasnjim zahtevima
+	// ova lista mora da se uporedi sa celom listom vec suspendovanih ili ne suspendovanih grupa jer moze da postojati grupa koja nije u ovoj list
 	
 	public GroupRequest save(GroupRequest groupRequest);
 	

@@ -32,7 +32,7 @@ export class LoginComponent {
         this.autentificationService.access_token = this.token;
         this.autentificationService.role = response.role; // setovanje role ulogovanog korisnika
         this.getUserByUserName(loginFrom.value.username);
-        alert('Uspesno ste se ulogovali');
+        alert('Succedfully logged in');
         this.router.navigate(['/posts']);
       },
       (error: HttpErrorResponse) => {
@@ -42,6 +42,8 @@ export class LoginComponent {
         } else if (error.status === 403) {
           // Handle 403 (Forbidden) response from server
           alert('User is blocked. Please wait to be unblocked.');
+        } else if (error.status === 400) {
+          alert('Bad credentials!!!');
         } else {
           // Handle other errors (e.g., 500 Internal Server Error)
           alert('An error occurred. Please try again later.');
