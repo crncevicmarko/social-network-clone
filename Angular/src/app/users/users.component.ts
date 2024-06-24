@@ -3,6 +3,9 @@ import { UserDTO } from '../model/userDTO';
 import { AuthService } from '../service';
 import { Router } from '@angular/router';
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { GroupService } from '../service/group.service';
+import { GroupRequestDTO } from '../model/groupRequestDTO';
+import { FriendRequestDTO } from '../model/friendRequestDTO';
 
 @Component({
   selector: 'app-users',
@@ -13,6 +16,7 @@ export class UsersComponent {
   public users!: UserDTO[];
   public logedInUser!: UserDTO;
   public searchTerm: string = '';
+  public requests!: FriendRequestDTO[];
 
   constructor(private router: Router, private userService: AuthService) {
     this.logedInUser = userService.logedUser;
@@ -21,6 +25,7 @@ export class UsersComponent {
   ngOnInit() {
     this.logedInUser = this.userService.logedUser;
     this.allUsers();
+    this.allSentRequests();
   }
 
   onSearch() {
@@ -48,6 +53,22 @@ export class UsersComponent {
         alert(error.message);
       }
     );
+  }
+  public allSentRequests() {
+    // all sent requests for logged user and one that he cant send again (approved ones and null ones that are not approved still)
+    this.userService.getAllSent().subscribe(
+      (response: FriendRequestDTO[]) => {
+        this.requests = response;
+        console.log('All that cant be sent again: ', this.requests);
+      },
+      (error: HttpErrorResponse) => {
+        alert(error.message);
+      }
+    );
+  }
+
+  public IsButtonSeen(id: number): boolean {
+    return this.requests.some((request) => request.user_id === id);
   }
 
   blockUser(id: number) {
@@ -78,6 +99,7 @@ export class UsersComponent {
     this.userService.sendFriendRequest(id).subscribe(
       (response: void) => {
         alert('Uspesno ste poslali zahtev');
+        this.ngOnInit();
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
@@ -86,7 +108,7 @@ export class UsersComponent {
   }
 
   get IsUserAdmin(): boolean {
-    console.log(this.userService.isLogedUserNameAdmin());
+    // console.log(this.userService.isLogedUserNameAdmin());
     return this.userService.isLogedUserNameAdmin();
   }
 }

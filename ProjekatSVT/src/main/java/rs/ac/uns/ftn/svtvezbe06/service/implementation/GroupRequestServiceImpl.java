@@ -44,8 +44,8 @@ public class GroupRequestServiceImpl implements GroupRequestService{
 
 	@Override
 	@Transactional
-	public List<GroupRequest> findAllSentAndApprovedGroupRequestsByUserId(int id) {
-		return groupReguestRepository.findAllSentAndApprovedGroupRequestsByUserId(id);
+	public List<GroupRequest> getAllGroupRequestsThatUserCantJoinByUserId(int id) {
+		return groupReguestRepository.findAllGroupRequestsThatUserCantJoinByUserId(id);
 	}
 
 }

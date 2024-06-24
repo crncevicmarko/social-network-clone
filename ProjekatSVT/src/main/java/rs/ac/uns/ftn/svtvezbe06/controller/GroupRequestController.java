@@ -97,9 +97,9 @@ public class GroupRequestController {
 	}
 	
 	@GetMapping("/allSent")
-	public ResponseEntity<List<GroupRequestDTO>> getAllSentAndApprovedGroupRequestsByUserId (Principal user) {
+	public ResponseEntity<List<GroupRequestDTO>> getAllGroupRequestsThatUserCantJoinByUserId (Principal user) {
 		User loggedUser = userService.findByUsername(user.getName());
-		List<GroupRequest> requests = groupRequestService.findAllSentAndApprovedGroupRequestsByUserId(loggedUser.getId());
+		List<GroupRequest> requests = groupRequestService.getAllGroupRequestsThatUserCantJoinByUserId(loggedUser.getId());
 		List<GroupRequestDTO> newList = new ArrayList<GroupRequestDTO>();
 		for(GroupRequest groupRequest : requests) {
 			GroupRequestDTO groupReques = new GroupRequestDTO();

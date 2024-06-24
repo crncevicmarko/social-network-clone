@@ -45,8 +45,9 @@ public class GroupController {
 
 //	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@GetMapping
-	public ResponseEntity<List<GroupDTO>> getAll(){
-		List<Group> lista = groupService.findAll();
+	public ResponseEntity<List<GroupDTO>> getAll(Principal user){
+		User user1 = userService.findByUsername(user.getName());
+		List<Group> lista = groupService.findAll(user1.getId());
 		List<GroupDTO> listGroups = new ArrayList<GroupDTO>();
 		for(Group group : lista) {
 			GroupDTO groupDTO = new GroupDTO();

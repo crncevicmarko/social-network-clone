@@ -4,6 +4,8 @@ import { ActiveCommentType } from 'src/app/model/activeCommentDTO';
 import { CommentDTO } from 'src/app/model/commentDTO';
 import { PostDTO } from 'src/app/model/postDTO';
 import { ReportDTO } from 'src/app/model/reportDTO';
+import { UserDTO } from 'src/app/model/userDTO';
+import { AuthService } from 'src/app/service';
 import { CommentsService } from 'src/app/service/comment.service';
 import { ReportService } from 'src/app/service/report.service';
 
@@ -13,7 +15,9 @@ import { ReportService } from 'src/app/service/report.service';
   styleUrls: ['./comment.component.css'],
 })
 export class CommentComponent implements OnInit {
+  public logedInUser!: UserDTO;
   constructor(
+    private userService: AuthService,
     private reportService: ReportService,
     private commentService: CommentsService
   ) {}
@@ -71,6 +75,7 @@ export class CommentComponent implements OnInit {
   canDelete: boolean = false;
   replyId: string | null = null;
   ngOnInit(): void {
+    this.logedInUser = this.userService.logedUser;
     this.canReply = Boolean(this.curentUserId);
     this.canEdit = this.curentUserId === this.comment.user_id.toString();
     this.canDelete =
@@ -120,5 +125,9 @@ export class CommentComponent implements OnInit {
         alert(error.message);
       }
     );
+  }
+
+  get isLoggedIn(): boolean {
+    return this.userService.tokenIsPresent();
   }
 }

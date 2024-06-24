@@ -8,6 +8,7 @@
       (ngSubmit)="addGroup(group)"
       class="form-horizontal border p-4"
       role="form"
+      *ngIf="!IsUserAdmin"
     >
       <div>
         <div>

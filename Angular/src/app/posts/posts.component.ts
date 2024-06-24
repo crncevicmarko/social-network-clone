@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { PostDTO } from '../model/postDTO';
 import { NgForm } from '@angular/forms';
-import { ApiService } from '../service';
+import { ApiService, AuthService } from '../service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserDTO } from '../model/userDTO';
 import { ReportService } from '../service/report.service';
@@ -25,6 +25,7 @@ export class PostsComponent {
   public editPostId!: number;
   public content!: string;
   public addPosts!: string;
+  public logedInUser!: UserDTO;
   public reportDTO: ReportDTO = {
     id: 0,
     timeStamp: '',
@@ -64,6 +65,7 @@ export class PostsComponent {
   }
 
   constructor(
+    private logOutService: AuthService,
     private postService: ApiService,
     private reportService: ReportService,
     private reactionService: ReactionService,
@@ -71,6 +73,10 @@ export class PostsComponent {
     private router: Router
   ) {
     this.getAllPosts();
+  }
+
+  get isLoggedIn(): boolean {
+    return this.logOutService.tokenIsPresent();
   }
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   sortby1!: string;

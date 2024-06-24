@@ -5,7 +5,7 @@
   <div class="comment-right-part">
     <div class="comment-content">
       <div class="comment-author">
-        {{ "UserName: " + comment.userName }}
+        {{ "UserId: " + comment.user_id }}
       </div>
       <div class="comment-text" *ngIf="!isEditing()">
         {{ "Comment text: " + comment.text }}
@@ -20,7 +20,7 @@
         "
         (handleCancel)="setActiveComment.emit(null)"
       ></app-comment-form>
-      <div class="comment-actions">
+      <div class="comment-actions" *ngIf="isLoggedIn">
         <div
           *ngIf="canReply"
           class="comment-action"
@@ -42,23 +42,22 @@
         >
           Delete
         </div>
-
         <button class="btn btn-danger redbtn" (click)="toggleReportList()">
           ...
         </button>
-        <div *ngIf="showReportList" class="report-list">
-          <select [(ngModel)]="selectedReportOption">
-            <option *ngFor="let option of reportOptions" [value]="option">
-              {{ option }}
-            </option>
-          </select>
-          <button
-            class="btn btn-danger redbtn"
-            (click)="report(selectedReportOption, comment)"
-          >
-            Report
-          </button>
-        </div>
+      </div>
+      <div *ngIf="showReportList" class="report-list">
+        <select [(ngModel)]="selectedReportOption">
+          <option *ngFor="let option of reportOptions" [value]="option">
+            {{ option }}
+          </option>
+        </select>
+        <button
+          class="btn btn-danger redbtn"
+          (click)="report(selectedReportOption, comment)"
+        >
+          Report
+        </button>
       </div>
       <app-comment-form
         *ngIf="isReplying()"

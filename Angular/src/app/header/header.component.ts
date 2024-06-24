@@ -25,7 +25,7 @@ export class HeaderComponent {
   }
 
   get IsUserAdmin(): boolean {
-    console.log(this.logOutService.isLogedUserNameAdmin());
+    // console.log(this.logOutService.isLogedUserNameAdmin());
     return this.logOutService.isLogedUserNameAdmin();
   }
 }

@@ -56,5 +56,10 @@ public class FriendRequestsDetailsImpl implements FriendRequestService{
 		return friendRequestRepository.getAllById(id);
 	}
 
+	@Override
+	public List<FriendRequest> getAllRequestsThatCantBeSentAgainByUserId(int id) {
+		return friendRequestRepository.getAllRequestsThatCantBeSentAgainByUserId(id);
+	}
+
 
 }

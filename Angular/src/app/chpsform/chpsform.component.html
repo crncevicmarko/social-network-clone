@@ -10,6 +10,9 @@
       formControlName="oldPassword"
       class="form-control"
     />
+    <div style="color: red" *ngIf="hasError('oldPassword', 'required')">
+      Old Password is Required
+    </div>
   </div>
   <div class="form-group">
     <label for="newPassword">New Password:</label>
@@ -18,10 +21,11 @@
       id="newPassword"
       formControlName="newPassword"
       class="form-control"
+      required
     />
     <div style="color: red" *ngIf="hasError('newPassword', 'pattern')">
-      Nova sifra mora da bude minimum 8 karaktera, makar jedno veliko slovo,
-      broj i karakter
+      The new code must be a minimum of 8 characters, at least one capital
+      letter, number and character
     </div>
   </div>
   <div class="form-group">
@@ -32,14 +36,17 @@
       formControlName="confirmPassword"
       class="form-control"
     />
-    <div
-      style="color: red"
-      *ngIf="hasError('confirmPassword', 'passwordMismatch')"
-    >
-      Passwords must match.
+    <div *ngIf="passwordForm.hasError('mismatch')" style="color: red">
+      Passwords do not match.
     </div>
   </div>
   <br />
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button
+    type="submit"
+    class="btn btn-primary"
+    [disabled]="passwordForm.invalid"
+  >
+    Submit
+  </button>
 </form>
 <!-- </div> -->

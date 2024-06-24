@@ -5,12 +5,12 @@
   role="form"
 >
   <div class="form-group text-center">
-    <div class="col-sm-10 reg-icon">
+    <div class="col-sm-4 reg-icon">
       <span class="fa fa-user fa-3x">Sort Post</span>
     </div>
   </div>
   <div class="form-group">
-    <div class="col-sm-10">
+    <div class="col-sm-4">
       <select
         class="form-control"
         id="sortby"
@@ -23,7 +23,7 @@
     </div>
   </div>
   <div class="form-group" *ngIf="sortby === 'number_of_likes'">
-    <div class="col-sm-10">
+    <div class="col-sm-4">
       <input
         type="number"
         class="form-control"
@@ -35,7 +35,7 @@
     </div>
   </div>
   <div class="form-group" *ngIf="sortby === 'date_of_creation'">
-    <div class="col-sm-10">
+    <div class="col-sm-4">
       <input
         type="date"
         class="form-control"
@@ -46,8 +46,8 @@
     </div>
   </div>
   <div class="form-group">
-    <div class="col-sm-10">
-      <button type="submit" class="btn btn-info">
+    <div class="col-sm-4">
+      <button type="submit" class="btn btn-info btn-sm">
         <span class="glyphicon glyphicon-share-alt"></span> Sort
       </button>
     </div>
@@ -133,7 +133,7 @@
       />
       <div class="meta">
         <div class="title">
-          <b>{{ "User Id : " + post.id }}</b>
+          <b>{{ "User Id : " + post.user_id }}</b>
         </div>
       </div>
       <a class="post-groupName" [routerLink]="['/group', post.group_id]">
@@ -142,9 +142,9 @@
       <a [routerLink]="['/posts', post.id]">{{ "Post: " + post.content }}</a>
     </div>
     <div class="body">
-      <img src="{{ post.id }}" class="post-image" />
-      <p>{{ post.content }}</p>
-      <div class="stats">
+      <img src="assets/images/user-icon.png" class="post-image" />
+      <h3>{{ post.content }}</h3>
+      <div class="stats" *ngIf="isLoggedIn">
         <button class="btn btn-primary" (click)="likePost(post)">Like</button>
         <p class="btn">{{ post.numberOfLikes }}</p>
         <button class="btn btn-info" (click)="disLikePost(post)">
@@ -168,7 +168,7 @@
         </div>
       </div>
     </div>
-    <div class="kffd">
+    <div class="kffd" *ngIf="isLoggedIn">
       <form
         #sortform="ngForm"
         (ngSubmit)="onSortComment1(sortform)"

@@ -53,7 +53,7 @@
                 Unblock
               </button>
             </td>
-            <td *ngIf="!IsUserAdmin">
+            <td *ngIf="!IsUserAdmin && !IsButtonSeen(user.id)">
               <button
                 class="btn btn-sm btn-primary"
                 (click)="sendFriendRequest(user.id)"

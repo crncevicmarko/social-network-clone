@@ -17,6 +17,7 @@ export class CommentsComponent implements OnInit {
   @Input() curentUserId!: string;
   @Input() postId!: string;
 
+  public logedInUser!: UserDTO;
   comments: CommentDTO[] = [];
 
   activeComment: ActiveCommentType | null = null;
@@ -67,6 +68,7 @@ export class CommentsComponent implements OnInit {
     //     alert('Komentari ne postoje' + ' ' + error.message);
     //   }
     // );
+    this.logedInUser = this.userService.logedUser;
     this.commentsService
       .getAllComments()
       .subscribe((response: CommentDTO[]) => {
@@ -148,5 +150,9 @@ export class CommentsComponent implements OnInit {
 
   getTopLevelComments(): CommentDTO[] {
     return this.comments.filter((comment) => comment.parentId === 'null');
+  }
+
+  get isLoggedIn(): boolean {
+    return this.userService.tokenIsPresent();
   }
 }

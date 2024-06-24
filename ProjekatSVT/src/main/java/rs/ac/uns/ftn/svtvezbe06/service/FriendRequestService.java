@@ -1,6 +1,7 @@
 package rs.ac.uns.ftn.svtvezbe06.service;
 
 import rs.ac.uns.ftn.svtvezbe06.model.entity.FriendRequest;
+import rs.ac.uns.ftn.svtvezbe06.model.entity.GroupRequest;
 
 import java.sql.Date;
 import java.util.List;
@@ -18,5 +19,6 @@ public interface FriendRequestService {
 	public List<FriendRequest> getAllByUserId(int id);
 
 	public List<FriendRequest> getAllById(int userId);
+	public List<FriendRequest> getAllRequestsThatCantBeSentAgainByUserId(int id);
 
 }

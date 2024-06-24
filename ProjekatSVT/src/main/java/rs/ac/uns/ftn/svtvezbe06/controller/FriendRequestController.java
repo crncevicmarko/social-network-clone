@@ -103,6 +103,13 @@ public class FriendRequestController {
 //		}
 		try {
 			if(approved == true){
+				FriendRequest newFriendRequest = new FriendRequest();
+				newFriendRequest.setApproved(true);
+				newFriendRequest.setCreatedAt(createdAt);
+				newFriendRequest.setRequestAcceptedOrDeniedAt(createdAt);
+				newFriendRequest.setUs(r.getUser());
+				newFriendRequest.setUser(r.getUs());
+				friendRequestService.save(newFriendRequest);
 				friendRequestService.accept(createdAt, r.getId());
 			}else{
 				friendRequestService.decline(createdAt, r.getId());
@@ -125,5 +132,23 @@ public class FriendRequestController {
 		requestedFirendTo.setUser_id(friendRequest.getUser().getId());
 		requestedFirendTo.setFriend_id(friendRequest.getUs().getId());
 		return requestedFirendTo;
+	}
+
+	@GetMapping("/allSent")
+	public ResponseEntity<List<FriendRequestDTO>> getAllRequestsThatCantBeSentAgainByUserId (Principal user){
+		User logedInUser = userService.findByUsername(user.getName());
+		List<FriendRequest> list = friendRequestService.getAllRequestsThatCantBeSentAgainByUserId(logedInUser.getId());
+		List<FriendRequestDTO> listDTO = new ArrayList<FriendRequestDTO>();
+		for(FriendRequest friendRequest : list){
+			FriendRequestDTO friendRequestDTO = new FriendRequestDTO();
+			friendRequestDTO.setId(friendRequest.getId());
+			friendRequestDTO.setApproved(friendRequest.getApproved());
+			friendRequestDTO.setCreatedAt(friendRequest.getCreatedAt().toString());
+			friendRequestDTO.setRequestAcceptedOrDeniedAt(friendRequest.getRequestAcceptedOrDeniedAt());
+			friendRequestDTO.setFriend_id(friendRequest.getUs().getId());
+			friendRequestDTO.setUser_id(friendRequest.getUser().getId());
+			listDTO.add(friendRequestDTO);
+		}
+		return new ResponseEntity<>(listDTO, HttpStatus.OK);
 	}
 }

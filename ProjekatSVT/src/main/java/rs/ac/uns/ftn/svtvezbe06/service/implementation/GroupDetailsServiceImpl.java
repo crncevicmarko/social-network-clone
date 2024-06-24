@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.svtvezbe06.service.implementation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,14 @@ public class GroupDetailsServiceImpl implements GroupService{
 	}
 
 	@Override
-	public List<Group> findAll() {
-		return groupRepository.findAll();
+	public List<Group> findAll(int userId) { // podesili smo da metoda vraca sve grupe koje nisu u vlasnistvu korisika ako je trazi admin vratice sve grupe
+		List<Group> newList = new ArrayList<Group>();
+		for (Group group : groupRepository.findAll()){
+			if(group.getUser().getId() != userId) {
+				newList.add(group);
+			}
+		}
+		return newList;
 	}
 	@Override
 	public List<Group> findAllByUserId(int id) {

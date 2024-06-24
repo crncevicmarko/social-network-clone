@@ -113,6 +113,12 @@ export class AuthService {
     );
   }
 
+  public getAllSent(): Observable<any> {
+    return this.http.get<any>(
+      `${'http://localhost:8080/friendRequests/allSent'}`
+    );
+  }
+
   private isAdmin: boolean = false; // Default value, change based on your logic
 
   setUserAdminStatus(isAdmin: boolean) {

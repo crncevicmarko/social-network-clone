@@ -37,4 +37,8 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, In
 	@Query("select f from FriendRequest f where f.approved IS null and f.user.id = :id")
 	public List<FriendRequest> getAllByUserId(int id);
 
+	@Modifying
+	@Query("select f from FriendRequest f where f.us.id = :id and (f.approved = true or f.approved is null)")
+	public List<FriendRequest> getAllRequestsThatCantBeSentAgainByUserId(Integer id);
+
 }

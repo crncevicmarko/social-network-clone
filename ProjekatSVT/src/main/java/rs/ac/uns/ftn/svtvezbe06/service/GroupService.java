@@ -7,7 +7,7 @@ import rs.ac.uns.ftn.svtvezbe06.model.entity.Group;
 public interface GroupService {
 
 	public Group findById(int id);
-	public List<Group> findAll();
+	public List<Group> findAll(int userId);
 	public Group save(Group group);
 	public void delete(Integer id);
 	public void update(Integer id, String description);

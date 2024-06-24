@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import {
-  AbstractControl,
   FormBuilder,
   FormGroup,
   Validators,
+  AbstractControl,
 } from '@angular/forms';
 import { AuthService } from '../service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -35,9 +35,7 @@ export class ChpsformComponent {
         ],
         confirmPassword: ['', Validators.required],
       },
-      {
-        validator: passwordMatchValidator,
-      }
+      { validators: this.matchPasswords }
     );
   }
 
@@ -62,30 +60,17 @@ export class ChpsformComponent {
           }
         );
     } else {
-      alert(
-        'Nova sifra mora da bude minimum 8 karaktera, makar jedno veliko slovo, broj i karakter'
-      );
+      alert('Somthing went wrong');
     }
   }
 
   hasError(controlName: string, errorName: string) {
     return this.passwordForm.get(controlName)?.hasError(errorName);
   }
-}
 
-function passwordMatchValidator(
-  formGroup: FormGroup
-): { [key: string]: boolean } | null {
-  const newPassword = formGroup.get('newPassword');
-  const confirmPassword = formGroup.get('confirmPassword');
-
-  if (
-    newPassword &&
-    confirmPassword &&
-    newPassword.value !== confirmPassword.value
-  ) {
-    return { passwordMismatch: true };
+  matchPasswords(control: AbstractControl): { [key: string]: boolean } | null {
+    const newPassword = control.get('newPassword')?.value;
+    const confirmPassword = control.get('confirmPassword')?.value;
+    return newPassword === confirmPassword ? null : { mismatch: true };
   }
-
-  return null;
 }

@@ -10,5 +10,5 @@ public interface GroupRequestService {
 	public GroupRequest save(GroupRequest groupRequest);
 	public void update(GroupRequest groupRequest, Integer id);
 	public List<GroupRequest> findAllByUserId(int id);
-	public List<GroupRequest> findAllSentAndApprovedGroupRequestsByUserId(int id);
+	public List<GroupRequest> getAllGroupRequestsThatUserCantJoinByUserId(int id);
 }
