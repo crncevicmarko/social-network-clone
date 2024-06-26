@@ -18,7 +18,7 @@ import rs.ac.uns.ftn.svtvezbe06.service.UserService;
 
 @RestController
 @RequestMapping("banns")
-public class BannedController {
+public class  	BannedController {
 	@Autowired
 	private BannedService bannedService;
 	
