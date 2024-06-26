@@ -2,7 +2,7 @@ version: "3.7"
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
-    container_name: ddmdemo-elasticsearch
+    container_name: svt-elasticsearch
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms1g -Xmx1g
@@ -10,7 +10,7 @@ services:
     ports:
       - "9200:9200"
     networks:
-      - ddmdemo-network
+      - svt-network
     #    command: >
     #      bash -c '
     #      if ! elasticsearch-plugin list | grep -q "analysis-icu"; then
@@ -22,7 +22,7 @@ services:
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.4.3
-    container_name: ddmdemo-logstash
+    container_name: svt-logstash
     ports:
       - "5044:5044"
     volumes:
@@ -30,20 +30,20 @@ services:
       - "./logstash-config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf"
     restart: always
     networks:
-      - ddmdemo-network
+      - svt-network
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.4.3
-    container_name: ddmdemo-kibana
+    container_name: svt-kibana
     ports:
       - "5601:5601"
     networks:
-      - ddmdemo-network
+      - svt-network
     restart: always
 
   minio:
     image: quay.io/minio/minio
-    container_name: ddmdemo-minio
+    container_name: svt-minio
     ports:
       - 9000:9000
       - 9090:9090
@@ -55,11 +55,11 @@ services:
       - minio-data:/data
     restart: always
     networks:
-      - ddmdemo-network
+      - svt-network
 
 networks:
-  ddmdemo-network:
-    name: ddmdemo-network
+  svt-network:
+    name: svt-network
 
 volumes:
   minio-data:
