@@ -34,6 +34,9 @@ public class Group {
 	
 	@Column(nullable = true)
 	private String suspendedReason;
+
+	@Column(nullable = true)
+	private String rules;
 	
 	@ManyToOne(fetch = FetchType.EAGER) // vidi da li ista valja
 	@JoinColumn(name = "user_id")

@@ -13,5 +13,6 @@ public class GroupDTO {
 	private String description;
 	private boolean isSuspended;
 	private String suspendedReason;
+	private String rules;
 	private int user_id;
 }

@@ -18,7 +18,7 @@ import rs.ac.uns.ftn.svtvezbe06.repository.DummyIndexRepository;
 import rs.ac.uns.ftn.svtvezbe06.repository.DummyRepository;
 import rs.ac.uns.ftn.svtvezbe06.repository.GroupIndexRepository;
 import rs.ac.uns.ftn.svtvezbe06.service.FileService;
-import rs.ac.uns.ftn.svtvezbe06.service.IndexingService;
+import rs.ac.uns.ftn.svtvezbe06.service.GroupIndexingService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,42 +28,27 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class IndexingServiceImpl implements IndexingService {
-
-    private final DummyIndexRepository dummyIndexRepository;
-
-    private final DummyRepository dummyRepository;
+public class GroupIndexingServiceImpl implements GroupIndexingService {
 
     private final FileService fileService;
 
     private final LanguageDetector languageDetector;
 
+    private final GroupIndexRepository groupIndexRepository;
+
     @Override
     @Transactional
-    public String indexDocument(MultipartFile documentFile) {
-        var newEntity = new DummyTable();
-        var newIndex = new DummyIndex();
-
-        var title = Objects.requireNonNull(documentFile.getOriginalFilename()).split("\\.")[0];
-        newIndex.setTitle(title);
-        newEntity.setTitle(title);
-
+    public String indexDocument(MultipartFile documentFile, GroupIndex newIndex) {
         var documentContent = extractDocumentContent(documentFile);
         if (detectLanguage(documentContent).equals("SR")) {
             newIndex.setContentSr(documentContent);
         } else {
             newIndex.setContentEn(documentContent);
         }
-
-        var serverFilename = fileService.store(documentFile, UUID.randomUUID().toString());
+        var serverFilename = fileService.store(documentFile, UUID.randomUUID().toString()); // sacuva u minio bazi
         newIndex.setServerFilename(serverFilename);
-        newEntity.setServerFilename(serverFilename);
 
-        newEntity.setMimeType(detectMimeType(documentFile));
-        var savedEntity = dummyRepository.save(newEntity);
-
-        newIndex.setDatabaseId(savedEntity.getId());
-        dummyIndexRepository.save(newIndex); // sacuva se u ES
+        groupIndexRepository.save(newIndex); // sacuva se u ES
 
         return serverFilename;
     }

@@ -21,12 +21,13 @@ public class IndexController {
     public DummyDocumentFileResponseDTO addDocumentFile(
         @ModelAttribute DummyDocumentFileDTO documentFile) {
         System.out.println("Usli u indeksiranje fajla: " + documentFile.toString());
-        try {
-            var serverFilename = indexingService.indexDocument(documentFile.file());
-            return new DummyDocumentFileResponseDTO(serverFilename);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("File processing failed", e);
-        }
+//        try {
+//            var serverFilename = indexingService.indexDocument(documentFile.file());
+//            return new DummyDocumentFileResponseDTO(serverFilename);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new RuntimeException("File processing failed", e);
+//        }
+        return null;
     }
 }

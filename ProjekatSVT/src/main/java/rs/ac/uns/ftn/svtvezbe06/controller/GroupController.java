@@ -6,29 +6,23 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mysql.cj.Session;
 
-import rs.ac.uns.ftn.svtvezbe06.model.dto.GroupDTO;
-import rs.ac.uns.ftn.svtvezbe06.model.dto.PostDTO;
-import rs.ac.uns.ftn.svtvezbe06.model.dto.UserTokenState;
-import rs.ac.uns.ftn.svtvezbe06.model.entity.Group;
-import rs.ac.uns.ftn.svtvezbe06.model.entity.Post;
-import rs.ac.uns.ftn.svtvezbe06.model.entity.User;
-import rs.ac.uns.ftn.svtvezbe06.service.GroupService;
+import org.springframework.web.multipart.MultipartFile;
+import rs.ac.uns.ftn.svtvezbe06.model.dto.*;
+import rs.ac.uns.ftn.svtvezbe06.model.entity.*;
+import rs.ac.uns.ftn.svtvezbe06.service.*;
 import rs.ac.uns.ftn.svtvezbe06.service.UserService;
 
 @RestController
@@ -40,10 +34,22 @@ public class GroupController {
 	
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private final GroupIndexingService indexingService;
+
+	@Autowired
+	private final SearchGroupAndPostService searchService;
 	
 	Date createdAt = new Date(System.currentTimeMillis());
 
-//	@PreAuthorize("hasAnyRole('USER','ADMIN')")
+	public GroupController(GroupIndexingService indexingService, SearchGroupAndPostService searchGroupAndPostService) {
+		this.indexingService = indexingService;
+		this.searchService = searchGroupAndPostService;
+	}
+
+
+	//	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@GetMapping
 	public ResponseEntity<List<GroupDTO>> getAll(Principal user){
 		User user1 = userService.findByUsername(user.getName());
@@ -55,6 +61,7 @@ public class GroupController {
 			groupDTO.setName(group.getName());
 			groupDTO.setDescription(group.getDescription());
 			groupDTO.setSuspended(group.isSuspended());
+			groupDTO.setRules(group.getRules());
 			groupDTO.setSuspendedReason(group.getSuspendedReason());
 			groupDTO.setUser_id(group.getUser().getId());
 			listGroups.add(groupDTO);
@@ -73,13 +80,14 @@ public class GroupController {
 			groupDTO.setName(group.getName());
 			groupDTO.setDescription(group.getDescription());
 			groupDTO.setSuspended(group.isSuspended());
+			groupDTO.setRules(group.getRules());
 			groupDTO.setSuspendedReason(group.getSuspendedReason());
 			groupDTO.setUser_id(group.getUser().getId());
 			listGroups.add(groupDTO);
 		}
 		return new ResponseEntity<>(listGroups, HttpStatus.OK);
 	}
-	
+
 	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@GetMapping("/{id}")
 	public ResponseEntity<Group> getOne(@PathVariable int id){
@@ -91,10 +99,18 @@ public class GroupController {
 			return new ResponseEntity<>(group, HttpStatus.OK);
 		}
 	}
-	
+
+	@PostMapping("/search/simple")
+	public Page<GroupIndex> simpleSearch(@RequestBody SearchQueryDTO simpleSearchQuery, Pageable pageable) {
+		return searchService.simpleSearch(simpleSearchQuery.keywords(), pageable, true);
+	}
+
 	@PreAuthorize("hasAnyRole('USER','ADMIN')")
-	@PostMapping
-	public ResponseEntity<Group> save(Principal user, @RequestBody Group group){ // primamo usera iz tokena verovatno i celu grupu
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<Group> save(Principal user,
+									  @RequestParam("group") String groupJson,
+									  @RequestParam("file") MultipartFile file) throws JsonProcessingException { // primamo usera iz tokena verovatno i celu grupu
+		Group group = new ObjectMapper().readValue(groupJson, Group.class);
 		// moramo da ubacimo korinsika u grupu i sacuvamo
         if(group.getName().equals("") || group.getDescription().equals("")){
             return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
@@ -102,16 +118,26 @@ public class GroupController {
 		User user1 = userService.findByUsername(user.getName());
 		group.setCreationDate(createdAt);
 		group.setSuspended(false);
+		group.setRules(null);
 		group.setUser(user1);
 		Group groupSave = groupService.save(group);
 		if(groupSave == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 		else {
+			// kreiramo indeks za grupu
+			var newIdex = new GroupIndex();
+			newIdex.setName(group.getName());
+			newIdex.setDescription(group.getDescription());
+			newIdex.setRules(group.getRules());
+			newIdex.setAverageLikes(5);
+			newIdex.setNumberOfPosts(5);
+			System.out.println("Document: "+ file);
+			indexingService.indexDocument(file, newIdex);
 			return new ResponseEntity<>(null, HttpStatus.CREATED);
 		}
 	}
-	
+
 //	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@PutMapping("/update/{id}")
 	public ResponseEntity<GroupDTO> update(Principal user, @PathVariable int id, @RequestBody Group group){
@@ -127,17 +153,18 @@ public class GroupController {
 		groupDTO.setName(newGroup.getName());
 		groupDTO.setDescription(newGroup.getDescription());
 		groupDTO.setSuspended(newGroup.isSuspended());
+		groupDTO.setRules(group.getRules());
 		groupDTO.setSuspendedReason(newGroup.getSuspendedReason());
 		groupDTO.setUser_id(newGroup.getUser().getId());
 		return new ResponseEntity<GroupDTO>(groupDTO, HttpStatus.OK);
 	}
-	
-	
+
+
 	@PreAuthorize("hasAnyRole('GROUPADMIN','ADMIN')")
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<GroupDTO> delete(@PathVariable int id){
 		try {
-			groupService.delete(id);	
+			groupService.delete(id);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
@@ -147,6 +174,7 @@ public class GroupController {
 		groupDTO.setName(newGroup.getName());
 		groupDTO.setDescription(newGroup.getDescription());
 		groupDTO.setSuspended(newGroup.isSuspended());
+		groupDTO.setRules(newGroup.getRules());
 		groupDTO.setSuspendedReason(newGroup.getSuspendedReason());
 		groupDTO.setUser_id(newGroup.getUser().getId());
 		return new ResponseEntity<GroupDTO>(groupDTO, HttpStatus.OK);
