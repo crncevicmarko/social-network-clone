@@ -30,6 +30,7 @@ import rs.ac.uns.ftn.svtvezbe06.model.entity.Post;
 import rs.ac.uns.ftn.svtvezbe06.model.entity.User;
 import rs.ac.uns.ftn.svtvezbe06.repository.CommentRepository;
 import rs.ac.uns.ftn.svtvezbe06.service.CommentService;
+import rs.ac.uns.ftn.svtvezbe06.service.PostIndexingService;
 import rs.ac.uns.ftn.svtvezbe06.service.PostService;
 import rs.ac.uns.ftn.svtvezbe06.service.UserService;
 
@@ -51,6 +52,9 @@ public class CommentController {
 	
 	@Autowired
 	private CommentRepository commentRepository;
+
+	@Autowired
+	private PostIndexingService postIndexingService;
 	
 	@GetMapping()
 	public ResponseEntity<List<CommentDTO>>fidAll(){
@@ -124,11 +128,15 @@ public class CommentController {
 			commentdto.setUser_id(commen.getUser().getId());
 			commentdto.setPost_id(commen.getPost().getId());
 			if(commen.getCommentParentId() == null) {
-			commentdto.setParentId("null");				
+			commentdto.setParentId("null");
 			}else {
 				commentdto.setParentId(Integer.toString(commen.getCommentParentId().getId()));
 			}
 		}
+		// update coment content, field in post idexes that holds all content of comments for post by post id
+		postIndexingService.updateCommentContent(post.getId());
+		// update number of comments, field in post idexes that holds number of all comments for post by post id
+		postIndexingService.updateNumberOfComments(post.getId());
 		return new ResponseEntity<>(commentdto, HttpStatus.CREATED);
 	}
 	
@@ -193,5 +201,4 @@ public class CommentController {
 		}
 		return new ResponseEntity<>(listComment, HttpStatus.OK);
 	}
-
 }

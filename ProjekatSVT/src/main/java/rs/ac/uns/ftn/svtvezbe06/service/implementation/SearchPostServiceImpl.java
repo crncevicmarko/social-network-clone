@@ -84,6 +84,28 @@ public class SearchPostServiceImpl implements SearchPostService {
         return runQuery(searchQueryBuilder.build());
     }
 
+    @Override
+    public Page<PostIndex> numOfCommentsSearch(Integer lowerBound, Integer upperBound, Pageable pageable) {
+        var searchQueryBuilder =
+                new NativeQueryBuilder().withQuery(buildNumOfCommentsSearchQuery(lowerBound, upperBound))
+                        .withPageable(pageable);
+
+        System.out.println("Query: "+searchQueryBuilder.getQuery().toString());
+
+        return runQuery(searchQueryBuilder.build());
+    }
+
+    @Override
+    public Page<PostIndex> advanceddSearch(String content, String commentsContent, List<Integer> likeRangeList, List<Integer> commentRangeList, String operation, Pageable pageable) {
+        var searchQueryBuilder =
+                new NativeQueryBuilder().withQuery(buildAdvanceddSearchQuery(content, commentsContent, likeRangeList, commentRangeList, operation))
+                        .withPageable(pageable);
+
+        System.out.println("searchQueryBuilder: "+searchQueryBuilder.getQuery().toString());
+
+        return runQuery(searchQueryBuilder.build());
+    }
+
     private Query buildSimpleSearchQuery(List<String> tokens) {
         return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
             tokens.forEach(token -> {
@@ -103,6 +125,8 @@ public class SearchPostServiceImpl implements SearchPostService {
                 // Matches documents with fuzzy matching in "title" field
                 b.should(sb -> sb.match(
                     m -> m.field("content").fuzziness(Fuzziness.ONE.asString()).query("*"+token+"*")));
+                b.should(sb -> sb.match(
+                        m -> m.field("commentContent").fuzziness(Fuzziness.ONE.asString()).query("*"+token+"*")));
 
                 // Match Query - full-text search in other fields
                 // Matches documents with full-text search in other fields
@@ -174,6 +198,75 @@ public class SearchPostServiceImpl implements SearchPostService {
         })))._toQuery();
     }
 
+    private Query buildAdvanceddSearchQuery(String content, String commentsContent, List<Integer> likeRangeList, List<Integer> commentRangeList, String operation) {
+        return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
+            if ("AND".equalsIgnoreCase(operation)) {
+                if (content != null && !content.isEmpty()) {
+                    b.must(sb -> sb.bool(subBool -> subBool
+                            .should(subShould -> subShould.match(m -> m.field("content").fuzziness(Fuzziness.ONE.asString()).query(content)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("content").query(content)))
+                            .should(subShould -> subShould.match(m -> m.field("content_sr").fuzziness(Fuzziness.ONE.asString()).query(content)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("content_sr").query(content)))
+                            .should(subShould -> subShould.match(m -> m.field("content_en").fuzziness(Fuzziness.ONE.asString()).query(content)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("content_en").query(content)))
+                    ));
+                }
+                if (commentsContent != null && !commentsContent.isEmpty()) {
+                    b.must(sb -> sb.bool(subBool -> subBool
+                            .should(subShould -> subShould.match(m -> m.field("commentContent").fuzziness(Fuzziness.ONE.asString()).query(commentsContent)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("commentContent").query(commentsContent)))
+                    ));
+                }
+                if (likeRangeList != null && !likeRangeList.isEmpty()) {
+                    for (int i = 0; i < likeRangeList.size(); i += 2) {
+                        int lowerBound = likeRangeList.get(i);
+                        int upperBound = likeRangeList.get(i + 1);
+                        b.must(sb -> sb.range(r -> r.field("numberOfLikes").gte(JsonData.of(lowerBound)).lte(JsonData.of(upperBound))));
+                    }
+                }
+                if (commentRangeList != null && !commentRangeList.isEmpty()) {
+                    for (int i = 0; i < commentRangeList.size(); i += 2) {
+                        int lowerBound = commentRangeList.get(i);
+                        int upperBound = commentRangeList.get(i + 1);
+                        b.must(sb -> sb.range(r -> r.field("numberOfComments").gte(JsonData.of(lowerBound)).lte(JsonData.of(upperBound))));
+                    }
+                }
+            } else if ("OR".equalsIgnoreCase(operation)) {
+                if (content != null && !content.isEmpty()) {
+                    b.should(sb -> sb.bool(subBool -> subBool
+                            .should(subShould -> subShould.match(m -> m.field("content").fuzziness(Fuzziness.ONE.asString()).query(content)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("content").query(content)))
+                            .should(subShould -> subShould.match(m -> m.field("content_sr").fuzziness(Fuzziness.ONE.asString()).query(content)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("content_sr").query(content)))
+                            .should(subShould -> subShould.match(m -> m.field("content_en").fuzziness(Fuzziness.ONE.asString()).query(content)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("content_en").query(content)))
+                    ));
+                }
+                if (commentsContent != null && !commentsContent.isEmpty()) {
+                    b.should(sb -> sb.bool(subBool -> subBool
+                            .should(subShould -> subShould.match(m -> m.field("commentContent").fuzziness(Fuzziness.ONE.asString()).query(commentsContent)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("commentContent").query(commentsContent)))
+                    ));
+                }
+                if (likeRangeList != null && !likeRangeList.isEmpty()) {
+                    for (int i = 0; i < likeRangeList.size(); i += 2) {
+                        int lowerBound = likeRangeList.get(i);
+                        int upperBound = likeRangeList.get(i + 1);
+                        b.should(sb -> sb.range(r -> r.field("numberOfLikes").gte(JsonData.of(lowerBound)).lte(JsonData.of(upperBound))));
+                    }
+                }
+                if (commentRangeList != null && !commentRangeList.isEmpty()) {
+                    for (int i = 0; i < commentRangeList.size(); i += 2) {
+                        int lowerBound = commentRangeList.get(i);
+                        int upperBound = commentRangeList.get(i + 1);
+                        b.should(sb -> sb.range(r -> r.field("numberOfComments").gte(JsonData.of(lowerBound)).lte(JsonData.of(upperBound))));
+                    }
+                }
+            }
+            return b;
+        })))._toQuery();
+    }
+
 
     private Query buildOnChoiceSearchQuery(List<String> operands) {
         return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
@@ -201,6 +294,19 @@ public class SearchPostServiceImpl implements SearchPostService {
                     .gte(JsonData.of(lowerBound))
                     .lte(JsonData.of(upperBound))
                 )
+            );
+            return b;
+        })))._toQuery();
+    }
+
+    private Query buildNumOfCommentsSearchQuery(Integer lowerBound, Integer upperBound) {
+        return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
+            b.should(sb -> sb
+                    .range(r -> r
+                            .field("numberOfComments")
+                            .gte(JsonData.of(lowerBound))
+                            .lte(JsonData.of(upperBound))
+                    )
             );
             return b;
         })))._toQuery();

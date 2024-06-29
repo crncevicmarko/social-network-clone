@@ -61,6 +61,17 @@ public class SearchGroupServiceImpl implements SearchGroupService {
     }
 
     @Override
+    public Page<GroupIndex> advanceddSearch(String name, String description, String rules, List<Integer> likeRange, List<Integer> postRange, String operation, Pageable pageable) {
+        var searchQueryBuilder =
+                new NativeQueryBuilder().withQuery(buildAdvancedSearchQuery1(name, description, rules, likeRange, postRange, operation))
+                        .withPageable(pageable);
+
+        System.out.println("searchQueryBuilder: "+searchQueryBuilder.getQuery().toString());
+
+        return runQuery(searchQueryBuilder.build());
+    }
+
+    @Override
     public Page<GroupIndex> oneChoiceSearch(List<String> expression, Pageable pageable) {
         var searchQueryBuilder =
                 new NativeQueryBuilder().withQuery(buildOnChoiceSearchQuery(expression))
@@ -82,7 +93,16 @@ public class SearchGroupServiceImpl implements SearchGroupService {
         return runQuery(searchQueryBuilder.build());
     }
 
+    @Override
+    public Page<GroupIndex> numofAverageLikeSearch(Integer lowerBound, Integer upperBound, Pageable pageable) {
+        var searchQueryBuilder =
+                new NativeQueryBuilder().withQuery(buildaveageNumofLikesSearchQuery(lowerBound, upperBound))
+                        .withPageable(pageable);
 
+        System.out.println("Query: "+searchQueryBuilder.getQuery().toString());
+
+        return runQuery(searchQueryBuilder.build());
+    }
 
     private Query buildSimpleSearchQuery(List<String> tokens) {
         return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
@@ -176,6 +196,87 @@ public class SearchGroupServiceImpl implements SearchGroupService {
         })))._toQuery();
     }
 
+    private Query buildAdvancedSearchQuery1(String name, String description, String rules, List<Integer> averageLikes, List<Integer> numberOfPosts, String operation) {
+        return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
+            if ("AND".equalsIgnoreCase(operation)) {
+                if (name != null && !name.isEmpty()) {
+                    b.must(sb -> sb.bool(subBool -> subBool
+                            .should(subShould -> subShould.match(m -> m.field("name").fuzziness(Fuzziness.ONE.asString()).query(name)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("name").query(name)))
+                    ));
+                }
+                if (description != null && !description.isEmpty()) {
+                    b.must(sb -> sb.bool(subBool -> subBool
+                            .should(subShould -> subShould.match(m -> m.field("description").fuzziness(Fuzziness.ONE.asString()).query(description)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("description").query(description)))
+                            .should(subShould -> subShould.match(m -> m.field("content_sr").fuzziness(Fuzziness.ONE.asString()).query(description)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("content_sr").query(description)))
+                            .should(subShould -> subShould.match(m -> m.field("content_en").fuzziness(Fuzziness.ONE.asString()).query(description)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("content_en").query(description)))
+                    ));
+                }
+                if (rules != null && !rules.isEmpty()) {
+                    b.must(sb -> sb.bool(subBool -> subBool
+                            .should(subShould -> subShould.match(m -> m.field("rules").fuzziness(Fuzziness.ONE.asString()).query(rules)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("rules").query(rules)))
+                    ));
+                }
+                if (averageLikes != null && !averageLikes.isEmpty()) {
+                    for (int i = 0; i < averageLikes.size(); i += 2) {
+                        int lowerBound = averageLikes.get(i);
+                        int upperBound = averageLikes.get(i + 1);
+                        b.must(sb -> sb.range(r -> r.field("averageLikes").gte(JsonData.of(lowerBound)).lte(JsonData.of(upperBound))));
+                    }
+                }
+                if (numberOfPosts != null && !numberOfPosts.isEmpty()) {
+                    for (int i = 0; i < numberOfPosts.size(); i += 2) {
+                        int lowerBound = numberOfPosts.get(i);
+                        int upperBound = numberOfPosts.get(i + 1);
+                        b.must(sb -> sb.range(r -> r.field("numberOfPosts").gte(JsonData.of(lowerBound)).lte(JsonData.of(upperBound))));
+                    }
+                }
+            } else if ("OR".equalsIgnoreCase(operation)) {
+                if (name != null && !name.isEmpty()) {
+                    b.should(sb -> sb.bool(subBool -> subBool
+                            .should(subShould -> subShould.match(m -> m.field("name").fuzziness(Fuzziness.ONE.asString()).query(name)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("name").query(name)))
+                    ));
+                }
+                if (description != null && !description.isEmpty()) {
+                    b.should(sb -> sb.bool(subBool -> subBool
+                            .should(subShould -> subShould.match(m -> m.field("description").fuzziness(Fuzziness.ONE.asString()).query(description)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("description").query(description)))
+                            .should(subShould -> subShould.match(m -> m.field("content_sr").fuzziness(Fuzziness.ONE.asString()).query(description)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("content_sr").query(description)))
+                            .should(subShould -> subShould.match(m -> m.field("content_en").fuzziness(Fuzziness.ONE.asString()).query(description)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("content_en").query(description)))
+                    ));
+                }
+                if (rules != null && !rules.isEmpty()) {
+                    b.should(sb -> sb.bool(subBool -> subBool
+                            .should(subShould -> subShould.match(m -> m.field("rules").fuzziness(Fuzziness.ONE.asString()).query(rules)))
+                            .should(subShould -> subShould.matchPhrase(m -> m.field("rules").query(rules)))
+                    ));
+                }
+                if (averageLikes != null && !averageLikes.isEmpty()) {
+                    for (int i = 0; i < averageLikes.size(); i += 2) {
+                        int lowerBound = averageLikes.get(i);
+                        int upperBound = averageLikes.get(i + 1);
+                        b.should(sb -> sb.range(r -> r.field("averageLikes").gte(JsonData.of(lowerBound)).lte(JsonData.of(upperBound))));
+                    }
+                }
+                if (numberOfPosts != null && !numberOfPosts.isEmpty()) {
+                    for (int i = 0; i < numberOfPosts.size(); i += 2) {
+                        int lowerBound = numberOfPosts.get(i);
+                        int upperBound = numberOfPosts.get(i + 1);
+                        b.should(sb -> sb.range(r -> r.field("numberOfPosts").gte(JsonData.of(lowerBound)).lte(JsonData.of(upperBound))));
+                    }
+                }
+            }
+            return b;
+        })))._toQuery();
+    }
+
 
     private Query buildOnChoiceSearchQuery(List<String> operands) {
         return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
@@ -207,6 +308,20 @@ public class SearchGroupServiceImpl implements SearchGroupService {
             return b;
         })))._toQuery();
     }
+
+    private Query buildaveageNumofLikesSearchQuery(Integer lowerBound, Integer upperBound) {
+        return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
+            b.should(sb -> sb
+                    .range(r -> r
+                            .field("averageLikes")
+                            .gte(JsonData.of(lowerBound))
+                            .lte(JsonData.of(upperBound))
+                    )
+            );
+            return b;
+        })))._toQuery();
+    }
+
 
     private Page<GroupIndex> runQuery(NativeQuery searchQuery) {
 

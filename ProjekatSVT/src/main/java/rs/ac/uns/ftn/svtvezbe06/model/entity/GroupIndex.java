@@ -1,7 +1,5 @@
 package rs.ac.uns.ftn.svtvezbe06.model.entity;
 
-//import jakarta.persistence.Id;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,19 +24,16 @@ public class GroupIndex {
 
     @Field(type = FieldType.Integer, store = true, name = "groupId")
     private Integer groupId;
-    @Field(type = FieldType.Text, store = true, name = "name")
+    @Field(type = FieldType.Text, store = true, name = "name", analyzer = "serbian_simple", searchAnalyzer = "serbian_simple")
     private String name;
 
-    @Field(type = FieldType.Text, store = true, name = "description")
+    @Field(type = FieldType.Text, store = true, name = "description", analyzer = "serbian_simple", searchAnalyzer = "serbian_simple")
     private String description;
-
-//    @Field(type = FieldType.Text, store = true, name = "title")
-//    private String fileContent;
 
     @Field(type = FieldType.Integer, store = true, name = "numberOfPosts")
     private int numberOfPosts;
 
-    @Field(type = FieldType.Text, store = true, name = "rules")
+    @Field(type = FieldType.Text, store = true, name = "rules", analyzer = "serbian_simple", searchAnalyzer = "serbian_simple")
     private String rules;
 
     @Field(type = FieldType.Integer, store = true, name = "averageLikes")

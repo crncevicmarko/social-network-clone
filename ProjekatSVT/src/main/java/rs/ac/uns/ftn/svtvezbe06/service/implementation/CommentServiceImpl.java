@@ -43,4 +43,9 @@ public class CommentServiceImpl implements CommentService{
 		commentRepository.delete(id);
 	}
 
+	@Override
+	public List<Comment> findAllByPostId(int postId) {
+		return  commentRepository.findAllByPostId(postId);
+	}
+
 }

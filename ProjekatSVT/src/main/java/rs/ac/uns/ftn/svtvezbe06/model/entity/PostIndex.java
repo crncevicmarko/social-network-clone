@@ -27,11 +27,18 @@ public class PostIndex {
     @Field(type = FieldType.Integer, store = true, name = "postId")
     private int postId;
 
-    @Field(type = FieldType.Text, store = true, name = "content")
+    @Field(type = FieldType.Text, store = true, name = "content", analyzer = "serbian_simple", searchAnalyzer = "serbian_simple")
     private String content;
 
     @Field(type = FieldType.Integer, store = true, name = "numberOfLikes")
     private int numberOfLikes;
+
+    @Field(type = FieldType.Text, store = true, name = "commentContent", analyzer = "serbian_simple", searchAnalyzer = "serbian_simple")
+    private String commentsContent;
+
+    @Field(type = FieldType.Integer, store = true, name = "numberOfComments")
+    private int numberOfComments;
+
     @Field(type = FieldType.Text, store = true, name = "content_sr", analyzer = "serbian_simple", searchAnalyzer = "serbian_simple")
     private String contentSr;
 

@@ -118,7 +118,7 @@ export class ConfigService {
     return this._delete_group;
   }
 
-  private _updatePost_url = this._posts_url + '/update'; //POST
+  private _updatePost_url = this._posts_url + '/update'; //PUT
 
   get updatePost_url(): string {
     return this._updatePost_url;

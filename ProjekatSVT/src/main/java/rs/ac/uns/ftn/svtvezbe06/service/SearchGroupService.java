@@ -13,7 +13,10 @@ public interface SearchGroupService {
     Page<GroupIndex> simpleSearch(List<String> keywords, Pageable pageable);
 
     Page<GroupIndex> advancedSearch(List<String> expression, Pageable pageable);
+    Page<GroupIndex> advanceddSearch(String name, String desription, String rules, List<Integer> likeRange, List<Integer> postRange, String operation, Pageable pageable);
 
     Page<GroupIndex> oneChoiceSearch(List<String> expression, Pageable pageable);
     Page<GroupIndex> numOfPostsSearch(Integer lowerBound, Integer upperBound, Pageable pageable);
+
+    Page<GroupIndex> numofAverageLikeSearch(Integer lowerBound, Integer upperBound, Pageable pageable);
 }

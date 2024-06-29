@@ -102,9 +102,24 @@ public class GroupController {
 		return searchService.simpleSearch(simpleSearchQuery.keywords(), pageable);
 	}
 
+//	@PostMapping("/search/advanced")
+//	public Page<GroupIndex> advancedSearch(@RequestBody SearchQueryDTO advancedSearchQuery, Pageable pageable) {
+//		return searchService.advancedSearch(advancedSearchQuery.keywords(), pageable);
+//	}
+
 	@PostMapping("/search/advanced")
-	public Page<GroupIndex> advancedSearch(@RequestBody SearchQueryDTO advancedSearchQuery, Pageable pageable) {
-		return searchService.advancedSearch(advancedSearchQuery.keywords(), pageable);
+	public Page<GroupIndex> advanceddSearch(@RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("rules") String rules, @RequestParam("likeRange") String likeRange, @RequestParam("postRange") String postRange, @RequestParam("operation") String operation, Pageable pageable) {
+		List<Integer> likeRangeList = (likeRange == null || likeRange.isEmpty()) ? new ArrayList<>() : createListRange(likeRange);
+		List<Integer> postRangeList = (postRange == null || postRange.isEmpty()) ? new ArrayList<>() : createListRange(postRange);
+		return searchService.advanceddSearch(name, description, rules, likeRangeList, postRangeList, operation, pageable);
+	}
+
+	public List<Integer> createListRange(String listRange){
+		String[] parts = listRange.split(":");
+		List<Integer> likerange = new ArrayList<>();
+		likerange.add(Integer.valueOf(parts[0]));
+		likerange.add(Integer.valueOf(parts[1]));
+		return  likerange;
 	}
 
 	@PostMapping("/search/byOneChoice")
@@ -120,6 +135,14 @@ public class GroupController {
 		return searchService.numOfPostsSearch(Integer.valueOf(lowerBound), Integer.valueOf(upperBound), pageable);
 	}
 
+	@PostMapping("/search/byAverageNumOfLikes")
+	public Page<GroupIndex> searchAverageNumOfLikesChoice(@RequestParam("lower") String lowerBound,  @RequestParam("upper") String upperBound, Pageable pageable) {
+		if(lowerBound == "" || upperBound == ""){
+			return null;
+		}
+		return searchService.numofAverageLikeSearch(Integer.valueOf(lowerBound), Integer.valueOf(upperBound), pageable);
+	}
+
 //	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<GroupDTO> save(Principal user,
@@ -133,7 +156,7 @@ public class GroupController {
 		User user1 = userService.findByUsername(user.getName());
 		group.setCreationDate(createdAt);
 		group.setSuspended(false);
-		group.setRules(null);
+		group.setRules(group.getRules());
 		group.setUser(user1);
 		Group groupSave = groupService.save(group);
 		if(groupSave == null) {
@@ -147,8 +170,8 @@ public class GroupController {
 			newIdex.setName(group.getName());
 			newIdex.setDescription(group.getDescription());
 			newIdex.setRules(group.getRules());
-			newIdex.setAverageLikes(5);
-			newIdex.setNumberOfPosts(5);
+			newIdex.setAverageLikes(0);
+			newIdex.setNumberOfPosts(0);
 			System.out.println("Document: "+ file);
 			indexingService.indexDocument(file, newIdex);
 			return new ResponseEntity<>(null, HttpStatus.CREATED);

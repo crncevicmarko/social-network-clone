@@ -30,4 +30,8 @@ public interface CommentRepository extends JpaRepository<Comment, Integer>{
 	@Modifying
 	@Query("SELECT c FROM Comment c WHERE c.timeStamp >= :datumOd AND c.timeStamp <= :datumDo ORDER BY c.timeStamp DESC")
 	public List<Comment> findAllByDateFromHierToLower(LocalDate datumOd, LocalDate datumDo);
+
+	@Modifying
+	@Query("select c from Comment c where c.post.id = :id")
+    List<Comment> findAllByPostId(int id);
 }

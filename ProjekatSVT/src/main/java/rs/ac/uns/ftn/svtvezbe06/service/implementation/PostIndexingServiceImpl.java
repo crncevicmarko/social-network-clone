@@ -20,22 +20,18 @@ import org.springframework.web.multipart.MultipartFile;
 import rs.ac.uns.ftn.svtvezbe06.exceptionhandling.exception.LoadingException;
 import rs.ac.uns.ftn.svtvezbe06.exceptionhandling.exception.NotFoundException;
 import rs.ac.uns.ftn.svtvezbe06.exceptionhandling.exception.StorageException;
+import rs.ac.uns.ftn.svtvezbe06.model.entity.Comment;
 import rs.ac.uns.ftn.svtvezbe06.model.entity.GroupIndex;
 import rs.ac.uns.ftn.svtvezbe06.model.entity.PostIndex;
 import rs.ac.uns.ftn.svtvezbe06.repository.GroupIndexRepository;
 import rs.ac.uns.ftn.svtvezbe06.repository.PostIndexRepository;
-import rs.ac.uns.ftn.svtvezbe06.service.FileService;
-import rs.ac.uns.ftn.svtvezbe06.service.GroupIndexingService;
-import rs.ac.uns.ftn.svtvezbe06.service.PostIndexingService;
+import rs.ac.uns.ftn.svtvezbe06.service.*;
 import org.elasticsearch.script.ScriptType;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +43,8 @@ public class PostIndexingServiceImpl implements PostIndexingService {
 
     private final PostIndexRepository postIndexRepository;
 
+    @Autowired
+    private CommentService commentService;
 //    private final ElasticsearchRestTemplate elasticsearchTemplate;
 
 //    @Autowired
@@ -69,6 +67,7 @@ public class PostIndexingServiceImpl implements PostIndexingService {
         } else {
             newIndex.setContentEn(documentContent);
         }
+        System.out.println("Index: "+newIndex.getContent()+ " Comment content: "+newIndex.getCommentsContent());
         var serverFilename = fileService.store(documentFile, UUID.randomUUID().toString()); // sacuva u minio bazi
         newIndex.setServerFilename(serverFilename);
 
@@ -86,6 +85,45 @@ public class PostIndexingServiceImpl implements PostIndexingService {
         postIndex.setNumberOfLikes(numberOfLikes);
 
         postIndexRepository.save(postIndex);
+    }
+
+    @Override
+    public void updateCommentContent(int postId) {
+        var content = getAllCommentsForPost(postId);
+        System.out.println("Usli u UpdateCommentContent "+ "Comment Content: "+ content +" Id objave je: "+postId);
+        var postIndex = postIndexRepository.findByPostId(String.valueOf(postId))
+                .orElseThrow(() -> new NotFoundException("Post index not found"));
+
+        postIndex.setCommentsContent(content);
+
+        postIndexRepository.save(postIndex);
+
+    }
+
+    @Override
+    public void updateNumberOfComments(int postId) {
+        var numberOfComments = getNumOfAllCommentsForPost(postId);
+        System.out.println("Usli u UpdateNumberOfComments "+ "Number of Comments: "+ numberOfComments +" Id objave je: "+postId);
+        var postIndex = postIndexRepository.findByPostId(String.valueOf(postId))
+                .orElseThrow(() -> new NotFoundException("Post index not found"));
+
+        postIndex.setNumberOfComments(numberOfComments);
+
+        postIndexRepository.save(postIndex);
+    }
+
+    public String getAllCommentsForPost(int postId){
+        List<Comment> comments = commentService.findAllByPostId(postId);
+        String commentContent = "";
+        for(Comment comment: comments){
+            commentContent += comment.getText()+" ";
+        }
+        return commentContent;
+    }
+
+    public int getNumOfAllCommentsForPost(int postId){
+        List<Comment> comments = commentService.findAllByPostId(postId);
+        return comments.size();
     }
 
     private String extractDocumentContent(MultipartFile multipartPdfFile) {

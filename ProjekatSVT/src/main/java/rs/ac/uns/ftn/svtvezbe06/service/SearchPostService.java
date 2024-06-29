@@ -16,4 +16,8 @@ public interface SearchPostService {
 
     Page<PostIndex> oneChoiceSearch(List<String> expression, Pageable pageable);
     Page<PostIndex> numOfLikesSearch(Integer lowerBound, Integer upperBound, Pageable pageable);
+
+    Page<PostIndex> numOfCommentsSearch(Integer lowerBound, Integer upperBound, Pageable pageable);
+
+    Page<PostIndex> advanceddSearch(String content, String commentsContent, List<Integer> likeRangeList, List<Integer> commentRangeList, String operation, Pageable pageable);
 }

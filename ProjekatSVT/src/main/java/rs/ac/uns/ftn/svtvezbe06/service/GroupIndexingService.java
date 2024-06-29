@@ -9,4 +9,5 @@ public interface GroupIndexingService {
 
     String indexDocument(MultipartFile documentFile, GroupIndex newIndex);
     void updateNumOfPosts(int numOfPosts, int groupId);
+    void updateAverageNumOfLikes(int numOfLikes, int groupId);
 }

@@ -11,4 +11,8 @@ public interface PostIndexingService {
     String indexDocument(MultipartFile documentFile, PostIndex newIndex);
 
     void updateNumOfLikes(int numberOfLikes, int postId);
+
+    void updateCommentContent(int postId);
+
+    void updateNumberOfComments(int postId);
 }

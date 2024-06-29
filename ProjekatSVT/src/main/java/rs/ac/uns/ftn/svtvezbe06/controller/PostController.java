@@ -83,6 +83,9 @@ public class PostController {
 		postDTO.setUser_id(post.getUser().getId());
 		// update number of likes for post by postId in elastic search
 		indexingService.updateNumOfLikes(post.getNumberOfLikes(), post.getId());
+		int averageNumOfLikesOfPostsForGroup = getAverageNumOfLikesForGroup(group.getId());
+		// update average number of like of all posts for group in elastic search
+		groupIndexingService.updateAverageNumOfLikes(averageNumOfLikesOfPostsForGroup, group.getId());
         return new ResponseEntity<>(postDTO, HttpStatus.OK);
 	}
 
@@ -91,9 +94,24 @@ public class PostController {
 		return searchService.simpleSearch(simpleSearchQuery.keywords(), pageable);
 	}
 
+//	@PostMapping("/search/advanced")
+//	public Page<PostIndex> advancedSearch(@RequestBody SearchQueryDTO advancedSearchQuery, Pageable pageable) {
+//		return searchService.advancedSearch(advancedSearchQuery.keywords(), pageable);
+//	}
+
 	@PostMapping("/search/advanced")
-	public Page<PostIndex> advancedSearch(@RequestBody SearchQueryDTO advancedSearchQuery, Pageable pageable) {
-		return searchService.advancedSearch(advancedSearchQuery.keywords(), pageable);
+	public Page<PostIndex> advancedSearch(@RequestParam("content") String content, @RequestParam("commentsContent") String commentsContent, @RequestParam("likeRange") String likeRange, @RequestParam("commentRange") String commentRange, @RequestParam("operation") String operation, Pageable pageable) {
+		List<Integer> likeRangeList = (likeRange == null || likeRange.isEmpty()) ? new ArrayList<>() : createListRange(likeRange);
+		List<Integer> commentRangeList = (commentRange == null || commentRange.isEmpty()) ? new ArrayList<>() : createListRange(commentRange);
+		return searchService.advanceddSearch(content, commentsContent, likeRangeList, commentRangeList, operation, pageable);
+	}
+
+	public List<Integer> createListRange(String listRange){
+		String[] parts = listRange.split(":");
+		List<Integer> likerange = new ArrayList<>();
+		likerange.add(Integer.valueOf(parts[0]));
+		likerange.add(Integer.valueOf(parts[1]));
+		return  likerange;
 	}
 
 	@PostMapping("/search/byNumOfLikes")
@@ -102,6 +120,14 @@ public class PostController {
 			return null;
 		}
 		return searchService.numOfLikesSearch(Integer.valueOf(lowerBound), Integer.valueOf(upperBound), pageable);
+	}
+
+	@PostMapping("/search/byNumOfComments")
+	public Page<PostIndex> searchByNumOfCommentsChoice(@RequestParam("lower") String lowerBound,  @RequestParam("upper") String upperBound, Pageable pageable) {
+		if(lowerBound == "" || upperBound == ""){
+			return null;
+		}
+		return searchService.numOfCommentsSearch(Integer.valueOf(lowerBound), Integer.valueOf(upperBound), pageable);
 	}
 	
 	@PreAuthorize("hasAnyRole('USER','ADMIN')")
@@ -132,6 +158,8 @@ public class PostController {
 				newIdex.setPostId(post.getId());
 				newIdex.setContent(post.getContent());
 				newIdex.setNumberOfLikes(post.getNumberOfLikes());
+				newIdex.setNumberOfComments(0);
+				newIdex.setCommentsContent("neki komentar");
 				System.out.println("Document: "+ file);
 				indexingService.indexDocument(file, newIdex);
 			}catch (Exception e){
@@ -214,5 +242,21 @@ public class PostController {
 		}
 		return new ResponseEntity<>(lis, HttpStatus.OK);
 	}
-	
+
+	public int getAverageNumOfLikesForGroup(int groupId) {
+		List<Post> posts = postService.findAllByGroupId(groupId);
+		if (posts.isEmpty()) {
+			return 0;
+		}
+
+		int numOfLikes = 0;
+		for (Post post : posts) {
+			numOfLikes += post.getNumberOfLikes();
+		}
+
+		int averageNum = numOfLikes / posts.size();
+		return averageNum;
+	}
+
+
 }

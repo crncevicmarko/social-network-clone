@@ -42,6 +42,7 @@ public class GroupIndexingServiceImpl implements GroupIndexingService {
         } else {
             newIndex.setContentEn(documentContent);
         }
+        System.out.println("Group rules: "+ newIndex.getRules());
         var serverFilename = fileService.store(documentFile, UUID.randomUUID().toString()); // sacuva u minio bazi
         newIndex.setServerFilename(serverFilename);
 
@@ -57,6 +58,17 @@ public class GroupIndexingServiceImpl implements GroupIndexingService {
                 .orElseThrow(() -> new NotFoundException("Group index not found"));
 
         groupIndex.setNumberOfPosts(numOfPosts);
+
+        groupIndexRepository.save(groupIndex);
+    }
+
+    @Override
+    public void updateAverageNumOfLikes(int numOfLikes, int groupId) {
+        System.out.println("Usli u UpdateAverageNumOfLikes: "+"Prosecan Broj Lajkova za Grupu je: "+numOfLikes +" Id grupe je: "+14);
+        var groupIndex = groupIndexRepository.findByGroupId(String.valueOf(groupId))
+                .orElseThrow(() -> new NotFoundException("Group index not found"));
+
+        groupIndex.setAverageLikes(numOfLikes);
 
         groupIndexRepository.save(groupIndex);
     }
