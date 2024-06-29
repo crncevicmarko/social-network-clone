@@ -3,7 +3,6 @@ package rs.ac.uns.ftn.svtvezbe06.controller;
 import java.security.Principal;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,8 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import com.mysql.cj.Session;
 
 import org.springframework.web.multipart.MultipartFile;
 import rs.ac.uns.ftn.svtvezbe06.model.dto.*;
@@ -36,17 +33,17 @@ public class GroupController {
 	private UserService userService;
 
 	@Autowired
-	private final GroupIndexingService indexingService;
+	private  GroupIndexingService indexingService;
 
 	@Autowired
-	private final SearchGroupAndPostService searchService;
+	private SearchGroupService searchService;
 	
 	Date createdAt = new Date(System.currentTimeMillis());
 
-	public GroupController(GroupIndexingService indexingService, SearchGroupAndPostService searchGroupAndPostService) {
-		this.indexingService = indexingService;
-		this.searchService = searchGroupAndPostService;
-	}
+//	public GroupController(GroupIndexingService indexingService, SearchGroupAndPostService searchGroupAndPostService) {
+//		this.indexingService = indexingService;
+//		this.searchService = searchGroupAndPostService;
+//	}
 
 
 	//	@PreAuthorize("hasAnyRole('USER','ADMIN')")
@@ -102,12 +99,30 @@ public class GroupController {
 
 	@PostMapping("/search/simple")
 	public Page<GroupIndex> simpleSearch(@RequestBody SearchQueryDTO simpleSearchQuery, Pageable pageable) {
-		return searchService.simpleSearch(simpleSearchQuery.keywords(), pageable, true);
+		return searchService.simpleSearch(simpleSearchQuery.keywords(), pageable);
 	}
 
-	@PreAuthorize("hasAnyRole('USER','ADMIN')")
+	@PostMapping("/search/advanced")
+	public Page<GroupIndex> advancedSearch(@RequestBody SearchQueryDTO advancedSearchQuery, Pageable pageable) {
+		return searchService.advancedSearch(advancedSearchQuery.keywords(), pageable);
+	}
+
+	@PostMapping("/search/byOneChoice")
+	public Page<GroupIndex> searchByChoice(@RequestBody SearchQueryDTO simpleSearchQuery, Pageable pageable) {
+		return searchService.oneChoiceSearch(simpleSearchQuery.keywords(), pageable);
+	}
+
+	@PostMapping("/search/byNumOfPosts")
+	public Page<GroupIndex> searchByNumOfPostsChoice(@RequestParam("lower") String lowerBound,  @RequestParam("upper") String upperBound, Pageable pageable) {
+		if(lowerBound == "" || upperBound == ""){
+			return null;
+		}
+		return searchService.numOfPostsSearch(Integer.valueOf(lowerBound), Integer.valueOf(upperBound), pageable);
+	}
+
+//	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Group> save(Principal user,
+	public ResponseEntity<GroupDTO> save(Principal user,
 									  @RequestParam("group") String groupJson,
 									  @RequestParam("file") MultipartFile file) throws JsonProcessingException { // primamo usera iz tokena verovatno i celu grupu
 		Group group = new ObjectMapper().readValue(groupJson, Group.class);
@@ -126,7 +141,9 @@ public class GroupController {
 		}
 		else {
 			// kreiramo indeks za grupu
+			System.out.println("Group: "+group.getId());
 			var newIdex = new GroupIndex();
+			newIdex.setGroupId(group.getId());
 			newIdex.setName(group.getName());
 			newIdex.setDescription(group.getDescription());
 			newIdex.setRules(group.getRules());

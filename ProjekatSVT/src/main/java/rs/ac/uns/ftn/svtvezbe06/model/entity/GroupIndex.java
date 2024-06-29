@@ -24,6 +24,8 @@ public class GroupIndex {
     @Id
     private String id;
 
+    @Field(type = FieldType.Integer, store = true, name = "groupId")
+    private Integer groupId;
     @Field(type = FieldType.Text, store = true, name = "name")
     private String name;
 

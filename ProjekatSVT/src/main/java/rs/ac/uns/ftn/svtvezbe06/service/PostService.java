@@ -10,4 +10,5 @@ public interface PostService {
 	public Post save(Post post);
 	public void update(String content, Integer numberOfLikes, Integer id);
 	public void delete(Integer id);
+	public List<Post> findAllByGroupId(int groupId);
 }

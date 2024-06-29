@@ -117,7 +117,13 @@ public class WebSecurityConfig {
                 .antMatchers(HttpMethod.POST, "/api/search/simple").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/search/advanced").permitAll()
                 .antMatchers(HttpMethod.POST, "/groups/search/simple").permitAll()
-//              .antMatchers(HttpMethod.GET, "/clubs/{id}/**").access("@webSecurity.checkClubId(authentication,request,#id)")
+                .antMatchers(HttpMethod.POST, "/groups/search/advanced").permitAll()
+                .antMatchers(HttpMethod.POST, "/groups/search/byOneChoice").permitAll()
+                .antMatchers(HttpMethod.POST, "/groups/search/byNumOfPosts").permitAll()
+                .antMatchers(HttpMethod.POST, "/posts/search/simple").permitAll()
+                .antMatchers(HttpMethod.POST, "/posts/search/advanced").permitAll()
+                .antMatchers(HttpMethod.POST, "/posts/search/byNumOfLikes").permitAll()
+                // .antMatchers(HttpMethod.GET, "/clubs/{id}/**").access("@webSecurity.checkClubId(authentication,request,#id)")
                 // ukoliko ne zelimo da koristimo @PreAuthorize anotacije nad metodama kontrolera, moze se iskoristiti hasRole() metoda da se ogranici
                 // koji tip korisnika moze da pristupi odgovarajucoj ruti. Npr. ukoliko zelimo da definisemo da ruti 'admin' moze da pristupi
                 // samo korisnik koji ima rolu 'ADMIN', navodimo na sledeci nacin:

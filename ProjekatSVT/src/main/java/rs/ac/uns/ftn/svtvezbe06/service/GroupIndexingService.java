@@ -8,4 +8,5 @@ import rs.ac.uns.ftn.svtvezbe06.model.entity.GroupIndex;
 public interface GroupIndexingService {
 
     String indexDocument(MultipartFile documentFile, GroupIndex newIndex);
+    void updateNumOfPosts(int numOfPosts, int groupId);
 }

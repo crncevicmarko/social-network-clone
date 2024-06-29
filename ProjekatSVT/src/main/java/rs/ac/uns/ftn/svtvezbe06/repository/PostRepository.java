@@ -26,6 +26,10 @@ public interface PostRepository extends JpaRepository<Post, Integer>{
 	@Modifying
 	@Query("delete from Post p where p.id = :id")
 	public void delete(Integer id);
+
+	@Modifying
+	@Query("select p from Post p where p.group.id = :id")
+	public List<Post> findAllByGroupId(int id);
 	
 	
 }

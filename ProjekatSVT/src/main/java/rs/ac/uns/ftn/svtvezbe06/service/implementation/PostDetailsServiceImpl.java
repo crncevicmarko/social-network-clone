@@ -50,4 +50,10 @@ public class PostDetailsServiceImpl implements PostService{
 		
 	}
 
+	@Override
+	@Transactional
+	public List<Post> findAllByGroupId(int groupId) {
+		return postRepository.findAllByGroupId(groupId);
+	}
+
 }

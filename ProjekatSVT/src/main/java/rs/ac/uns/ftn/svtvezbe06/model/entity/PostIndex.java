@@ -24,33 +24,20 @@ public class PostIndex {
     @Id
     private String id;
 
-    @Field(type = FieldType.Text, store = true, name = "title")
+    @Field(type = FieldType.Integer, store = true, name = "postId")
+    private int postId;
+
+    @Field(type = FieldType.Text, store = true, name = "content")
     private String content;
 
-    @Field(type = FieldType.Text, store = true, name = "title")
-    private String fileContent;
-
-//    @Field(type = FieldType.Text, store = true, name = "title")
-//    private String fileContent;
-
-    @Field(type = FieldType.Text, store = true, name = "title")
-    private int numberOfPosts;
-
-    @Field(type = FieldType.Text, store = true, name = "title")
-    private String rules;
-
-    @Field(type = FieldType.Text, store = true, name = "title")
-    private String averageLikes;
-
+    @Field(type = FieldType.Integer, store = true, name = "numberOfLikes")
+    private int numberOfLikes;
     @Field(type = FieldType.Text, store = true, name = "content_sr", analyzer = "serbian_simple", searchAnalyzer = "serbian_simple")
     private String contentSr;
 
-//    @Field(type = FieldType.Text, store = true, name = "content_en", analyzer = "english", searchAnalyzer = "english")
-//    private String contentEn;
-//
-//    @Field(type = FieldType.Text, store = true, name = "server_filename", index = false)
-//    private String serverFilename;
+    @Field(type = FieldType.Text, store = true, name = "content_en", analyzer = "english", searchAnalyzer = "english")
+    private String contentEn;
 
-    @Field(type = FieldType.Integer, store = true, name = "database_id")
-    private Integer databaseId;
+    @Field(type = FieldType.Text, store = true, name = "server_filename", index = false)
+    private String serverFilename;
 }
