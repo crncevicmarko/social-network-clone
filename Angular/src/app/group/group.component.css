@@ -1,0 +1,72 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-form {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.custom-form .form-row {
+  margin-bottom: 20px;
+}
+
+.custom-form .form-group {
+  margin-bottom: 20px;
+}
+
+.custom-form .form-control {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+}
+
+.custom-form .btn-primary {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.custom-form .btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.custom-form label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.custom-form .form-group.row {
+  display: flex;
+  align-items: center;
+}
+
+.custom-form .form-group.row .col-form-label {
+  margin-bottom: 0;
+  padding-right: 10px;
+}
+
+.custom-form .form-group.row .form-control {
+  flex-grow: 1;
+}
+
+.custom-form .form-control::placeholder {
+  color: #adb5bd;
+}

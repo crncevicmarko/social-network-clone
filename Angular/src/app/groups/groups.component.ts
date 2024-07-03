@@ -14,12 +14,13 @@ import { LoginComponent } from '../login/login.component';
   styleUrls: ['./groups.component.css'],
 })
 export class GroupsComponent {
-  public groups!: GroupDTO[];
+  public groups: GroupDTO[] = [];
   public group!: GroupDTO;
   public desription!: string;
   public activeGroups!: GroupDTO[];
   public otherGroups!: any[];
   public logedInUser!: UserDTO;
+  public selectedFileName: string = '';
 
   constructor(
     private groupService: GroupService,
@@ -30,29 +31,45 @@ export class GroupsComponent {
     this.logedInUser = userService.logedUser;
   }
 
+  groupFIle: any;
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.groupFIle = input;
+    if (input.files && input.files.length > 0) {
+      // console.log('File: ', input.files[0]);
+      this.selectedFileName = input.files[0].name;
+    }
+  }
+
   reloadPage() {
     this.router.navigate([this.router.url]);
   }
   public addGroup(group: NgForm) {
-    this.groupService.createGroup(group.value).subscribe(
-      (response: GroupDTO) => {
-        alert('Uspesno ste kreirali grupu');
-        this.group = response;
-        this.reloadPage;
-        group.resetForm();
-      },
-      (error: HttpErrorResponse) => {
-        if (error.status === 406) {
-          alert('Form cant be empty');
-        } else {
-          alert(error.message);
+    console.log('Form Data:', this.groupFIle.files[0]);
+    console.log('Group: ', group.value);
+    this.groupService
+      .createGroup(group.value, this.groupFIle.files[0])
+      .subscribe(
+        (response: GroupDTO) => {
+          alert('Uspesno ste kreirali grupu');
+          this.group = response;
+          this.reloadPage;
           group.resetForm();
+        },
+        (error: HttpErrorResponse) => {
+          if (error.status === 406) {
+            alert('Form cant be empty');
+          } else {
+            alert(error.message);
+            group.resetForm();
+          }
         }
-      }
-    );
+      );
   }
 
   public allGroups() {
+    this.groups = [];
     this.activeGroups = [];
     this.otherGroups = [];
     this.groupService.getAllSent().subscribe(
@@ -78,6 +95,40 @@ export class GroupsComponent {
           }
         }
         this.groups = response;
+      },
+      (error: HttpErrorResponse) => {
+        alert(error.message);
+      }
+    );
+  }
+
+  searchGroups(searchData: any) {
+    this.groups = [];
+    console.log('Search Data:', searchData);
+    this.groupService.searchGroups(searchData).subscribe(
+      (response: any) => {
+        for (var val of response) {
+          console.log('Value: ', val);
+          this.groupService
+            .getGroupById(val.groupId)
+            .subscribe((group: GroupDTO) => {
+              console.log('Group: ', group);
+              this.groups.push(group);
+            });
+        }
+        this.groupService.getAllSent().subscribe(
+          (response: GroupDTO[]) => {
+            console.log('User Requests : ', response);
+            for (var val of response) {
+              console.log('Groupe Request: ', val);
+              this.otherGroups.push(val);
+            }
+            console.log('Users : ', this.otherGroups);
+          },
+          (error: HttpErrorResponse) => {
+            alert(error.message);
+          }
+        );
       },
       (error: HttpErrorResponse) => {
         alert(error.message);

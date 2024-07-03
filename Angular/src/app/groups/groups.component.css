@@ -1,0 +1,26 @@
+.search-form {
+  display: flex;
+  align-items: center;
+  margin: 10px;
+}
+
+.search-form .form-group {
+  margin-right: 10px; /* Adjust spacing between form fields */
+}
+
+.search-form .input-group {
+  display: flex;
+}
+
+.search-form .input-group input {
+  flex: 1; /* Allow inputs to expand */
+  margin-right: 5px; /* Adjust spacing between input fields */
+}
+
+.search-form .form-group:last-child {
+  margin-right: 0; /* Remove right margin from the last form group */
+}
+
+.search-form button {
+  margin-left: 10px; /* Adjust spacing between last form group and button */
+}

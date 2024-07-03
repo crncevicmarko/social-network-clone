@@ -90,6 +90,7 @@ public class WebSecurityConfig {
         		.antMatchers(HttpMethod.GET, "/posts/numberOfLikes/{numberOfLikes}").permitAll()
                 .antMatchers(HttpMethod.GET, "/groups").permitAll()
                 .antMatchers(HttpMethod.POST, "/groups").permitAll()
+                .antMatchers(HttpMethod.GET, "/groups/{id}").permitAll()
                 .antMatchers(HttpMethod.PUT, "/groups/update/{id}").permitAll()
                 .antMatchers(HttpMethod.DELETE, "/groups/delete/{id}").permitAll()
                 .antMatchers(HttpMethod.GET, "/groupRequests").permitAll()

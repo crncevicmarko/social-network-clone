@@ -3,10 +3,11 @@ import { NgForm } from '@angular/forms';
 import { PostDTO } from '../model/postDTO';
 import { ReportDTO } from '../model/reportDTO';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ApiService } from '../service';
+import { ApiService, AuthService } from '../service';
 import { ReportService } from '../service/report.service';
 import { PostsComponent } from '../posts/posts.component';
 import { ActivatedRoute } from '@angular/router';
+import { UserDTO } from '../model/userDTO';
 
 @Component({
   selector: 'app-group',
@@ -14,6 +15,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./group.component.css', '../shared-styles.css'],
 })
 export class GroupComponent {
+  public logedInUser!: UserDTO;
   groupId!: string;
   // postComponent = new PostsComponent(this.postService, this.reportService);
   public posts: PostDTO[] = [];
@@ -53,10 +55,12 @@ export class GroupComponent {
   }
 
   constructor(
+    private authService: AuthService,
     private postService: ApiService,
     private reportService: ReportService,
     private route: ActivatedRoute
   ) {
+    this.logedInUser = this.authService.logedUser;
     this.getAllPosts();
   }
 
@@ -65,6 +69,10 @@ export class GroupComponent {
     if (groupId !== null) {
       this.groupId = groupId;
     }
+  }
+
+  get isLoggedIn(): boolean {
+    return this.authService.tokenIsPresent();
   }
   public deletePost(id: number) {
     // treba isDeleted
@@ -78,18 +86,29 @@ export class GroupComponent {
       }
     );
   }
+  postFIle: any;
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.postFIle = input;
+  }
+
   public onAddPost(addPost: NgForm): void {
-    this.postService.addPost(1, addPost.value).subscribe(
-      (response: PostDTO) => {
-        this.addPost = response;
-        this.addPosts = '';
-        alert('You added post');
-        this.getAllPosts();
-      },
-      (error: HttpErrorResponse) => {
-        alert(error.message);
-      }
-    );
+    console.log('GroupId: ', this.groupId);
+    console.log('Post: ', addPost.value);
+    console.log('FIle: ', this.postFIle.files[0]);
+    this.postService
+      .addPost(Number(this.groupId), addPost.value, this.postFIle.files[0])
+      .subscribe(
+        (response: PostDTO) => {
+          this.addPost = response;
+          this.addPosts = '';
+          alert('You added post');
+          this.getAllPosts();
+        },
+        (error: HttpErrorResponse) => {
+          alert(error.message);
+        }
+      );
   }
 
   public getAllPosts() {

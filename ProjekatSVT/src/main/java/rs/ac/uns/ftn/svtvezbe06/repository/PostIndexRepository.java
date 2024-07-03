@@ -9,6 +9,6 @@ import rs.ac.uns.ftn.svtvezbe06.model.entity.PostIndex;
 import java.util.Optional;
 
 @Repository
-public interface PostIndexRepository extends ElasticsearchRepository<PostIndex, String>{
+public interface PostIndexRepository extends ElasticsearchRepository<PostIndex, String> {
     Optional<PostIndex> findByPostId(String postId);
 }

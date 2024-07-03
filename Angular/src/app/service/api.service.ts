@@ -33,12 +33,56 @@ export class ApiService {
 
   constructor(private http: HttpClient, private config: ConfigService) {}
 
+  public searchPosts(searchData: any): Observable<any> {
+    const formData = new FormData();
+    formData.append('content', searchData.content);
+    formData.append('commentsContent', searchData.commentsContent);
+    if (
+      searchData.likeRangeLower == '' ||
+      searchData.likeRangeUpper == '' ||
+      searchData.likeRangeLower == null ||
+      searchData.likeRangeUpper == null
+    ) {
+      formData.append('likeRange', '');
+    } else {
+      formData.append(
+        'likeRange',
+        searchData.likeRangeLower + ':' + searchData.likeRangeUpper
+      );
+    }
+    if (
+      searchData.commentRangeLower == '' ||
+      searchData.commentRangeUpper == '' ||
+      searchData.commentRangeLower == null ||
+      searchData.commentRangeUpper == null
+    ) {
+      formData.append('commentRange', '');
+    } else {
+      formData.append(
+        'commentRange',
+        searchData.commentRangeLower + ':' + searchData.commentRangeUpper
+      );
+    }
+    formData.append('operation', searchData.operation);
+    console.log('Form Data: ', formData);
+    return this.http.post<any>(
+      `${this.config.posts_url}/search/advanced`,
+      formData
+    );
+  }
+
   public getPosts(): Observable<PostDTO[]> {
     return this.http.get<PostDTO[]>(`${this.config.posts_url}`);
   }
 
-  public addPost(groupId: number, post: PostDTO): Observable<PostDTO> {
-    return this.http.post<PostDTO>(`${this.config.posts_url}/${groupId}`, post);
+  public addPost(groupId: number, post: any, file: File): Observable<PostDTO> {
+    const formData: FormData = new FormData();
+    formData.append('post', JSON.stringify(post)); // Convert group object to JSON string
+    formData.append('file', file, file.name);
+    return this.http.post<PostDTO>(
+      `${this.config.posts_url}/${groupId}`,
+      formData
+    );
   }
 
   public update(id: number, updatedPost: PostDTO): Observable<PostDTO> {

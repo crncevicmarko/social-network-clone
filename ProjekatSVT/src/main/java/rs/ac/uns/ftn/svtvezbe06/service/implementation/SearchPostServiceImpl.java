@@ -6,17 +6,26 @@ import co.elastic.clients.json.JsonData;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.HighlightQuery;
+import org.springframework.data.elasticsearch.core.query.highlight.Highlight;
+import org.springframework.data.elasticsearch.core.query.highlight.HighlightField;
 import org.springframework.stereotype.Service;
 import rs.ac.uns.ftn.svtvezbe06.exceptionhandling.exception.MalformedQueryException;
+import rs.ac.uns.ftn.svtvezbe06.model.entity.GroupIndex;
 import rs.ac.uns.ftn.svtvezbe06.model.entity.PostIndex;
 import rs.ac.uns.ftn.svtvezbe06.service.SearchPostService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -97,13 +106,36 @@ public class SearchPostServiceImpl implements SearchPostService {
 
     @Override
     public Page<PostIndex> advanceddSearch(String content, String commentsContent, List<Integer> likeRangeList, List<Integer> commentRangeList, String operation, Pageable pageable) {
-        var searchQueryBuilder =
-                new NativeQueryBuilder().withQuery(buildAdvanceddSearchQuery(content, commentsContent, likeRangeList, commentRangeList, operation))
-                        .withPageable(pageable);
+        List<HighlightField> requiredHighlights = Arrays.asList(
+                new HighlightField("content"),
+                new HighlightField("commentContent"),
+                new HighlightField("content_sr"),
+                new HighlightField("content_en")
+        );
 
-        System.out.println("searchQueryBuilder: "+searchQueryBuilder.getQuery().toString());
+        Query searchQuery = buildAdvanceddSearchQuery(content, commentsContent, likeRangeList, commentRangeList, operation);
+        System.out.println("Search query: " + searchQuery);
 
-        return runQuery(searchQueryBuilder.build());
+        try {
+            NativeQuery queryBuilder = new NativeQueryBuilder().withQuery(searchQuery).withPageable(pageable).withHighlightQuery(new HighlightQuery(new Highlight(requiredHighlights), PostIndex.class)).build();
+            System.out.println("Query builder: " + queryBuilder);
+            SearchHits<PostIndex> searchHits = elasticsearchTemplate.search(queryBuilder, PostIndex.class);
+            System.out.println("Hits: " + searchHits);
+            List<PostIndex> results = new ArrayList<>();
+            for (SearchHit<PostIndex> hit : searchHits.getSearchHits()) {
+                PostIndex postIndex = hit.getContent();
+                postIndex.setHighlights(hit.getHighlightFields());
+                results.add(postIndex);
+                System.out.println("Results: "+ postIndex.getHighlights().size());
+            }
+
+
+            return new PageImpl<>(results, pageable, searchHits.getTotalHits());
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+            throw new RuntimeException("Error executing Elasticsearch search", e);
+        }
     }
 
     private Query buildSimpleSearchQuery(List<String> tokens) {

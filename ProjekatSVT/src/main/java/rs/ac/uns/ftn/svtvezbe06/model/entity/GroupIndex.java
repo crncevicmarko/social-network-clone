@@ -10,6 +10,8 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
 import javax.persistence.Id;
+import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -47,4 +49,6 @@ public class GroupIndex {
 
     @Field(type = FieldType.Text, store = true, name = "server_filename", index = false)
     private String serverFilename;
+
+    private Map<String, List<String>> highlights;
 }

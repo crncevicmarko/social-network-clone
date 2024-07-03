@@ -6,14 +6,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.tika.Tika;
 import org.apache.tika.language.detect.LanguageDetector;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.reindex.UpdateByQueryRequest;
-import org.elasticsearch.script.Script;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,13 +14,9 @@ import rs.ac.uns.ftn.svtvezbe06.exceptionhandling.exception.LoadingException;
 import rs.ac.uns.ftn.svtvezbe06.exceptionhandling.exception.NotFoundException;
 import rs.ac.uns.ftn.svtvezbe06.exceptionhandling.exception.StorageException;
 import rs.ac.uns.ftn.svtvezbe06.model.entity.Comment;
-import rs.ac.uns.ftn.svtvezbe06.model.entity.GroupIndex;
 import rs.ac.uns.ftn.svtvezbe06.model.entity.PostIndex;
-import rs.ac.uns.ftn.svtvezbe06.repository.GroupIndexRepository;
 import rs.ac.uns.ftn.svtvezbe06.repository.PostIndexRepository;
 import rs.ac.uns.ftn.svtvezbe06.service.*;
-import org.elasticsearch.script.ScriptType;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

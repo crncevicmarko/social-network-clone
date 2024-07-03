@@ -17,7 +17,7 @@
       </div>
       <div class="form-group row">
         <label class="col-sm-2 col-form-label">Name Of The Group</label>
-        <div class="col-sm-2">
+        <div class="col-sm-4">
           <input
             type="text"
             class="form-control"
@@ -41,8 +41,31 @@
           />
         </div>
       </div>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Rules</label>
+        <div class="col-sm-4">
+          <input
+            type="text"
+            class="form-control"
+            name="rules"
+            ngModel
+            placeholder="Rules"
+            required
+          />
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Upload File</label>
+        <div class="col-sm-4">
+          <input
+            type="file"
+            class="form-control"
+            (change)="onFileSelected($event)"
+            required
+          />
+        </div>
+      </div>
 
-      <br />
       <div class="form-group">
         <div class="col-sm-10">
           <button
@@ -50,12 +73,112 @@
             class="btn btn-success"
             [disabled]="!group.valid"
           >
-            <span class="glyphicon glyphicon-share-alt"></span>
             Create
           </button>
         </div>
       </div>
     </form>
+
+    <div>
+      <!-- <button class="btn btn-secondary" (click)="allGroups()">
+        GetAllGroups
+      </button> -->
+      <form
+        (ngSubmit)="searchGroups(searchForm.value)"
+        #searchForm="ngForm"
+        class="search-form border p-2"
+      >
+        <div class="form-group border p-2">
+          <label for="name" class="sr-only">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            ngModel
+            class="form-control form-control-sm"
+            placeholder="Name"
+          />
+        </div>
+        <div class="form-group border p-2">
+          <label for="description" class="sr-only">Description:</label>
+          <input
+            type="text"
+            id="description"
+            name="description"
+            ngModel
+            class="form-control form-control-sm"
+            placeholder="Description"
+          />
+        </div>
+        <div class="form-group border p-2">
+          <label for="rules" class="sr-only">Rules:</label>
+          <input
+            type="text"
+            id="rules"
+            name="rules"
+            ngModel
+            class="form-control form-control-sm"
+            placeholder="Rules"
+          />
+        </div>
+        <div class="form-group border p-2">
+          <label for="likeRande" class="sr-only">Like Range:</label>
+          <div class="input-group">
+            <input
+              type="number"
+              id="likeRandeLower"
+              name="likeRandeLower"
+              ngModel
+              class="form-control form-control-sm"
+              placeholder="Like Range Lower"
+            />
+            <input
+              type="number"
+              id="likeRandeUpper"
+              name="likeRandeUpper"
+              ngModel
+              class="form-control form-control-sm"
+              placeholder="Like Range Upper"
+            />
+          </div>
+        </div>
+        <div class="form-group border p-2">
+          <label for="postRange" class="sr-only">Post Range:</label>
+          <div class="input-group">
+            <input
+              type="number"
+              id="postRangeLower"
+              name="postRangeLower"
+              ngModel
+              class="form-control form-control-sm"
+              placeholder="Post Range Lower"
+            />
+            <input
+              type="number"
+              id="postRangeUpper"
+              name="postRangeUpper"
+              ngModel
+              class="form-control form-control-sm"
+              placeholder="Post Range Upper"
+            />
+          </div>
+        </div>
+        <div class="form-group border p-2">
+          <label for="operation" class="sr-only">Operation:</label>
+          <select
+            id="operation"
+            name="operation"
+            ngModel
+            class="form-control form-control-sm"
+          >
+            <option value="AND" selected>AND</option>
+            <option value="OR">OR</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+      </form>
+    </div>
+
     <div>
       <button class="btn btn-secondary" (click)="allGroups()">
         GetAllGroups
@@ -69,9 +192,9 @@
         <tr>
           <th>Group Name</th>
           <th>Group Description</th>
-          <th *ngIf="IsUserAdmin">Edit</th>
+          <!-- <th *ngIf="IsUserAdmin">Edit</th>
           <th *ngIf="IsUserAdmin">Suspend Group</th>
-          <th *ngIf="!IsUserAdmin">Join</th>
+          <th *ngIf="!IsUserAdmin">Join</th> -->
           <th>View Group</th>
         </tr>
       </thead>
@@ -93,7 +216,7 @@
               readonly
             />
           </td>
-          <td *ngIf="IsUserAdmin">
+          <!-- <td *ngIf="IsUserAdmin">
             <button>Edit</button>
           </td>
           <td *ngIf="IsUserAdmin">
@@ -114,7 +237,7 @@
             >
               Join
             </button>
-          </td>
+          </td> -->
           <td>
             <button class="btn btn-info" (click)="view(group.id)">
               View Group

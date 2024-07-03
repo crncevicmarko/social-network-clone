@@ -34,6 +34,12 @@ public class GroupDetailsServiceImpl implements GroupService{
 		}
 		return newList;
 	}
+
+	@Override
+	public List<Group> findAll() {
+		return groupRepository.findAll();
+	}
+
 	@Override
 	public List<Group> findAllByUserId(int id) {
 		return groupRepository.findAllByUserId(id);

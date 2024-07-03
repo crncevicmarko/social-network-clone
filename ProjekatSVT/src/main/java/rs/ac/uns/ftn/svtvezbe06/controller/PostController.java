@@ -63,7 +63,7 @@ public class PostController {
 		return new ResponseEntity<List<PostDTO>>(listaPostova, HttpStatus.OK);
 	}
 	
-	@PreAuthorize("hasAnyRole('USER','ADMIN')")
+//	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@GetMapping("/{id}")
 	public ResponseEntity<PostDTO> getOne(@PathVariable int id){
 		Post post = new Post();
@@ -100,10 +100,13 @@ public class PostController {
 //	}
 
 	@PostMapping("/search/advanced")
-	public Page<PostIndex> advancedSearch(@RequestParam("content") String content, @RequestParam("commentsContent") String commentsContent, @RequestParam("likeRange") String likeRange, @RequestParam("commentRange") String commentRange, @RequestParam("operation") String operation, Pageable pageable) {
+	public List<PostIndex> advancedSearch(@RequestParam("content") String content, @RequestParam("commentsContent") String commentsContent, @RequestParam("likeRange") String likeRange, @RequestParam("commentRange") String commentRange, @RequestParam("operation") String operation, Pageable pageable) {
+		System.out.println("Usli u advancedSearch: "+ "Content: "+content+"Comments content: "+commentsContent+"Like range: "+likeRange+"Comment range: "+commentRange+"Operation: "+operation);
 		List<Integer> likeRangeList = (likeRange == null || likeRange.isEmpty()) ? new ArrayList<>() : createListRange(likeRange);
 		List<Integer> commentRangeList = (commentRange == null || commentRange.isEmpty()) ? new ArrayList<>() : createListRange(commentRange);
-		return searchService.advanceddSearch(content, commentsContent, likeRangeList, commentRangeList, operation, pageable);
+		operation = (operation.equals("")) ? "AND" : operation;
+		Page<PostIndex> postIndex = searchService.advanceddSearch(content, commentsContent, likeRangeList, commentRangeList, operation, pageable);
+		return postIndex.getContent();
 	}
 
 	public List<Integer> createListRange(String listRange){

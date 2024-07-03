@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ErrorHandler } from '@angular/core';
 import { PostDTO } from '../model/postDTO';
 import { NgForm } from '@angular/forms';
 import { ApiService, AuthService } from '../service';
@@ -161,17 +161,17 @@ export class PostsComponent {
     );
   }
   public onAddPost(addPost: NgForm): void {
-    this.postService.addPost(3, addPost.value).subscribe(
-      (response: PostDTO) => {
-        this.addPost = response;
-        this.addPosts = '';
-        alert('You added post');
-        this.getAllPosts();
-      },
-      (error: HttpErrorResponse) => {
-        alert(error.message);
-      }
-    );
+    // this.postService.addPost(3, addPost.value).subscribe(
+    //   (response: PostDTO) => {
+    //     this.addPost = response;
+    //     this.addPosts = '';
+    //     alert('You added post');
+    //     this.getAllPosts();
+    //   },
+    //   (error: HttpErrorResponse) => {
+    //     alert(error.message);
+    //   }
+    // );
   }
 
   public getAllPosts() {
@@ -185,6 +185,64 @@ export class PostsComponent {
       (error: HttpErrorResponse) => {
         alert(error.message);
         this.router.navigate(['/login']);
+      }
+    );
+  }
+
+  highlights: string[] = [];
+  extractHighlights(data: any): string[] {
+    console.log('Podaci u extractHighlights funkciji: ', data[0].highlights);
+
+    data.forEach((item: any) => {
+      if (item.highlights) {
+        if (
+          item.highlights.commentsContent &&
+          Array.isArray(item.highlights.commentsContent)
+        ) {
+          item.highlights.commentsContent.forEach((highlight: string) => {
+            const strippedText = this.stripHtmlTags(highlight);
+            this.highlights.push(strippedText);
+          });
+        }
+
+        if (item.highlights.content && Array.isArray(item.highlights.content)) {
+          item.highlights.content.forEach((highlight: string) => {
+            const strippedText = this.stripHtmlTags(highlight);
+            this.highlights.push(strippedText);
+          });
+        }
+      }
+    });
+
+    return this.highlights;
+  }
+
+  // Function to strip HTML tags
+  stripHtmlTags(str: any) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = str;
+    return tempDiv.textContent || tempDiv.innerText || '';
+  }
+
+  // highlights: string[] = [];
+
+  searchPosts(searchData: any) {
+    this.posts = [];
+    console.log('Form Data: ', searchData);
+    this.postService.searchPosts(searchData).subscribe(
+      (respones: any) => {
+        console.log('Data: ', respones);
+        this.highlights = this.extractHighlights(respones);
+        console.log('Highlights: ', this.highlights);
+        for (var val of respones) {
+          this.postService.getPostById(val.postId).subscribe((r: PostDTO) => {
+            console.log('Post: ', r);
+            this.posts.push(r);
+          });
+        }
+      },
+      (error: HttpErrorResponse) => {
+        alert(error.message);
       }
     );
   }

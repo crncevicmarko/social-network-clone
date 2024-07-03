@@ -5,18 +5,34 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.json.JsonData;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.common.unit.Fuzziness;
+//import org.elasticsearch.index.query.BoolQueryBuilder;
+//import org.elasticsearch.index.query.QueryBuilder;
+//import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.springframework.data.elasticsearch.core.query.HighlightQuery;
+import org.springframework.data.elasticsearch.core.query.highlight.Highlight;
+import org.springframework.data.elasticsearch.core.query.highlight.HighlightField;
 import org.springframework.data.domain.Page;
+//import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+//import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
+import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+//import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+//import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import rs.ac.uns.ftn.svtvezbe06.exceptionhandling.exception.MalformedQueryException;
 import rs.ac.uns.ftn.svtvezbe06.model.entity.GroupIndex;
 import rs.ac.uns.ftn.svtvezbe06.service.SearchGroupService;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -60,17 +76,51 @@ public class SearchGroupServiceImpl implements SearchGroupService {
 //        return null;
     }
 
+//    @Override
+//    public Page<GroupIndex> advanceddSearch(String name, String description, String rules, List<Integer> likeRange, List<Integer> postRange, String operation, Pageable pageable) {
+//        var searchQueryBuilder =
+//                new NativeQueryBuilder().withQuery(buildAdvancedSearchQuery1(name, description, rules, likeRange, postRange, operation))
+//                        .withPageable(pageable);
+//
+//        System.out.println("searchQueryBuilder: "+searchQueryBuilder.getQuery().toString());
+//
+//        return runQuery(searchQueryBuilder.build());
+//    }
+
     @Override
     public Page<GroupIndex> advanceddSearch(String name, String description, String rules, List<Integer> likeRange, List<Integer> postRange, String operation, Pageable pageable) {
-        var searchQueryBuilder =
-                new NativeQueryBuilder().withQuery(buildAdvancedSearchQuery1(name, description, rules, likeRange, postRange, operation))
-                        .withPageable(pageable);
+        List<HighlightField> requiredHighlights = Arrays.asList(
+                new HighlightField("name"),
+                new HighlightField("description"),
+                new HighlightField("rules"),
+                new HighlightField("content_sr"),
+                new HighlightField("content_en")
+        );
 
-        System.out.println("searchQueryBuilder: "+searchQueryBuilder.getQuery().toString());
+        Query searchQuery = buildAdvancedSearchQuery1(name, description, rules, likeRange, postRange, operation);
+        System.out.println("Search query: " + searchQuery);
 
-        return runQuery(searchQueryBuilder.build());
+        try {
+            NativeQuery queryBuilder = new NativeQueryBuilder().withQuery(searchQuery).withPageable(pageable).withHighlightQuery(new HighlightQuery(new Highlight(requiredHighlights), GroupIndex.class)).build();
+            System.out.println("Query builder: " + queryBuilder);
+            SearchHits<GroupIndex> searchHits = elasticsearchTemplate.search(queryBuilder, GroupIndex.class);
+            System.out.println("Hits: " + searchHits);
+            List<GroupIndex> results = new ArrayList<>();
+            for (SearchHit<GroupIndex> hit : searchHits.getSearchHits()) {
+                GroupIndex groupIndex = hit.getContent();
+                groupIndex.setHighlights(hit.getHighlightFields());
+                results.add(groupIndex);
+                System.out.println("Results: "+ groupIndex.getHighlights().size());
+            }
+
+
+            return new PageImpl<>(results, pageable, searchHits.getTotalHits());
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+            throw new RuntimeException("Error executing Elasticsearch search", e);
+        }
     }
-
     @Override
     public Page<GroupIndex> oneChoiceSearch(List<String> expression, Pageable pageable) {
         var searchQueryBuilder =
@@ -277,6 +327,77 @@ public class SearchGroupServiceImpl implements SearchGroupService {
         })))._toQuery();
     }
 
+//    private QueryBuilder buildAdvancedSearchQuery1(String name, String description, String rules, List<Integer> averageLikes, List<Integer> numberOfPosts, String operation) {
+//        BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+//
+//        if ("AND".equalsIgnoreCase(operation)) {
+//            if (name != null && !name.isEmpty()) {
+//                boolQuery.must(QueryBuilders.matchQuery("name", name).fuzziness(Fuzziness.ONE));
+//                boolQuery.must(QueryBuilders.matchPhraseQuery("name", name));
+//            }
+//            if (description != null && !description.isEmpty()) {
+//                boolQuery.must(QueryBuilders.matchQuery("description", description).fuzziness(Fuzziness.ONE));
+//                boolQuery.must(QueryBuilders.matchPhraseQuery("description", description));
+//                boolQuery.must(QueryBuilders.matchQuery("content_sr", description).fuzziness(Fuzziness.ONE));
+//                boolQuery.must(QueryBuilders.matchPhraseQuery("content_sr", description));
+//                boolQuery.must(QueryBuilders.matchQuery("content_en", description).fuzziness(Fuzziness.ONE));
+//                boolQuery.must(QueryBuilders.matchPhraseQuery("content_en", description));
+//            }
+//            if (rules != null && !rules.isEmpty()) {
+//                boolQuery.must(QueryBuilders.matchQuery("rules", rules).fuzziness(Fuzziness.ONE));
+//                boolQuery.must(QueryBuilders.matchPhraseQuery("rules", rules));
+//            }
+//            if (averageLikes != null && !averageLikes.isEmpty()) {
+//                for (int i = 0; i < averageLikes.size(); i += 2) {
+//                    int lowerBound = averageLikes.get(i);
+//                    int upperBound = averageLikes.get(i + 1);
+//                    boolQuery.must(QueryBuilders.rangeQuery("averageLikes").gte(lowerBound).lte(upperBound));
+//                }
+//            }
+//            if (numberOfPosts != null && !numberOfPosts.isEmpty()) {
+//                for (int i = 0; i < numberOfPosts.size(); i += 2) {
+//                    int lowerBound = numberOfPosts.get(i);
+//                    int upperBound = numberOfPosts.get(i + 1);
+//                    boolQuery.must(QueryBuilders.rangeQuery("numberOfPosts").gte(lowerBound).lte(upperBound));
+//                }
+//            }
+//        } else if ("OR".equalsIgnoreCase(operation)) {
+//            if (name != null && !name.isEmpty()) {
+//                boolQuery.should(QueryBuilders.matchQuery("name", name).fuzziness(Fuzziness.ONE));
+//                boolQuery.should(QueryBuilders.matchPhraseQuery("name", name));
+//            }
+//            if (description != null && !description.isEmpty()) {
+//                boolQuery.should(QueryBuilders.matchQuery("description", description).fuzziness(Fuzziness.ONE));
+//                boolQuery.should(QueryBuilders.matchPhraseQuery("description", description));
+//                boolQuery.should(QueryBuilders.matchQuery("content_sr", description).fuzziness(Fuzziness.ONE));
+//                boolQuery.should(QueryBuilders.matchPhraseQuery("content_sr", description));
+//                boolQuery.should(QueryBuilders.matchQuery("content_en", description).fuzziness(Fuzziness.ONE));
+//                boolQuery.should(QueryBuilders.matchPhraseQuery("content_en", description));
+//            }
+//            if (rules != null && !rules.isEmpty()) {
+//                boolQuery.should(QueryBuilders.matchQuery("rules", rules).fuzziness(Fuzziness.ONE));
+//                boolQuery.should(QueryBuilders.matchPhraseQuery("rules", rules));
+//            }
+//            if (averageLikes != null && !averageLikes.isEmpty()) {
+//                for (int i = 0; i < averageLikes.size(); i += 2) {
+//                    int lowerBound = averageLikes.get(i);
+//                    int upperBound = averageLikes.get(i + 1);
+//                    boolQuery.should(QueryBuilders.rangeQuery("averageLikes").gte(lowerBound).lte(upperBound));
+//                }
+//            }
+//            if (numberOfPosts != null && !numberOfPosts.isEmpty()) {
+//                for (int i = 0; i < numberOfPosts.size(); i += 2) {
+//                    int lowerBound = numberOfPosts.get(i);
+//                    int upperBound = numberOfPosts.get(i + 1);
+//                    boolQuery.should(QueryBuilders.rangeQuery("numberOfPosts").gte(lowerBound).lte(upperBound));
+//                }
+//            }
+//        }
+//
+//        return boolQuery;
+//    }
+
+
 
     private Query buildOnChoiceSearchQuery(List<String> operands) {
         return BoolQuery.of(q -> q.must(mb -> mb.bool(b -> {
@@ -322,7 +443,6 @@ public class SearchGroupServiceImpl implements SearchGroupService {
         })))._toQuery();
     }
 
-
     private Page<GroupIndex> runQuery(NativeQuery searchQuery) {
 
         var searchHits = elasticsearchTemplate.search(searchQuery, GroupIndex.class,
@@ -332,4 +452,5 @@ public class SearchGroupServiceImpl implements SearchGroupService {
 
         return (Page<GroupIndex>) SearchHitSupport.unwrapSearchHits(searchHitsPaged);
     }
+
 }

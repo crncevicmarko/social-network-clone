@@ -47,10 +47,28 @@ public class GroupController {
 
 
 	//	@PreAuthorize("hasAnyRole('USER','ADMIN')")
+//	@GetMapping
+//	public ResponseEntity<List<GroupDTO>> getAll(Principal user){
+//		User user1 = userService.findByUsername(user.getName());
+//		List<Group> lista = groupService.findAll(user1.getId());
+//		List<GroupDTO> listGroups = new ArrayList<GroupDTO>();
+//		for(Group group : lista) {
+//			GroupDTO groupDTO = new GroupDTO();
+//			groupDTO.setId(group.getId());
+//			groupDTO.setName(group.getName());
+//			groupDTO.setDescription(group.getDescription());
+//			groupDTO.setSuspended(group.isSuspended());
+//			groupDTO.setRules(group.getRules());
+//			groupDTO.setSuspendedReason(group.getSuspendedReason());
+//			groupDTO.setUser_id(group.getUser().getId());
+//			listGroups.add(groupDTO);
+//		}
+//		return new ResponseEntity<>(listGroups, HttpStatus.OK);
+//	}
+
 	@GetMapping
-	public ResponseEntity<List<GroupDTO>> getAll(Principal user){
-		User user1 = userService.findByUsername(user.getName());
-		List<Group> lista = groupService.findAll(user1.getId());
+	public ResponseEntity<List<GroupDTO>> getAll(){
+		List<Group> lista = groupService.findAll();
 		List<GroupDTO> listGroups = new ArrayList<GroupDTO>();
 		for(Group group : lista) {
 			GroupDTO groupDTO = new GroupDTO();
@@ -87,13 +105,23 @@ public class GroupController {
 
 	@PreAuthorize("hasAnyRole('USER','ADMIN')")
 	@GetMapping("/{id}")
-	public ResponseEntity<Group> getOne(@PathVariable int id){
+	public ResponseEntity<GroupDTO> getOne(@PathVariable int id){
+		System.out.println("Id: "+ id);
 		Group group = groupService.findById(id);
+		System.out.println("Group: "+ group.getDescription());
 		if(group == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 		else {
-			return new ResponseEntity<>(group, HttpStatus.OK);
+			GroupDTO groupDTO = new GroupDTO();
+			groupDTO.setId(group.getId());
+			groupDTO.setName(group.getName());
+			groupDTO.setDescription(group.getDescription());
+			groupDTO.setSuspended(group.isSuspended());
+			groupDTO.setRules(group.getRules());
+			groupDTO.setSuspendedReason(group.getSuspendedReason());
+			groupDTO.setUser_id(group.getUser().getId());
+			return new ResponseEntity<>(groupDTO, HttpStatus.OK);
 		}
 	}
 
@@ -108,10 +136,12 @@ public class GroupController {
 //	}
 
 	@PostMapping("/search/advanced")
-	public Page<GroupIndex> advanceddSearch(@RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("rules") String rules, @RequestParam("likeRange") String likeRange, @RequestParam("postRange") String postRange, @RequestParam("operation") String operation, Pageable pageable) {
+	public List<GroupIndex> advanceddSearch(@RequestParam("name") String name, @RequestParam("description") String description, @RequestParam("rules") String rules, @RequestParam("likeRange") String likeRange, @RequestParam("postRange") String postRange, @RequestParam("operation") String operation, Pageable pageable) {
 		List<Integer> likeRangeList = (likeRange == null || likeRange.isEmpty()) ? new ArrayList<>() : createListRange(likeRange);
 		List<Integer> postRangeList = (postRange == null || postRange.isEmpty()) ? new ArrayList<>() : createListRange(postRange);
-		return searchService.advanceddSearch(name, description, rules, likeRangeList, postRangeList, operation, pageable);
+		operation = (operation.equals("")) ? "AND" : operation;
+		Page<GroupIndex> page = searchService.advanceddSearch(name, description, rules, likeRangeList, postRangeList, operation, pageable);
+		return page.getContent();
 	}
 
 	public List<Integer> createListRange(String listRange){
@@ -148,6 +178,7 @@ public class GroupController {
 	public ResponseEntity<GroupDTO> save(Principal user,
 									  @RequestParam("group") String groupJson,
 									  @RequestParam("file") MultipartFile file) throws JsonProcessingException { // primamo usera iz tokena verovatno i celu grupu
+		System.out.println("Usli u Save"+ " Group: "+groupJson+" File: "+file);
 		Group group = new ObjectMapper().readValue(groupJson, Group.class);
 		// moramo da ubacimo korinsika u grupu i sacuvamo
         if(group.getName().equals("") || group.getDescription().equals("")){

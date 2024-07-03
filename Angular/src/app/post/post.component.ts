@@ -170,17 +170,17 @@ export class PostComponent {
     );
   }
   public onAddPost(addPost: NgForm): void {
-    this.postService.addPost(1, addPost.value).subscribe(
-      (response: PostDTO) => {
-        this.addPost = response;
-        this.addPosts = '';
-        alert('You added post');
-        this.getAllPosts();
-      },
-      (error: HttpErrorResponse) => {
-        alert(error.message);
-      }
-    );
+    // this.postService.addPost(1, addPost.value).subscribe(
+    //   (response: PostDTO) => {
+    //     this.addPost = response;
+    //     this.addPosts = '';
+    //     alert('You added post');
+    //     this.getAllPosts();
+    //   },
+    //   (error: HttpErrorResponse) => {
+    //     alert(error.message);
+    //   }
+    // );
   }
 
   public getAllPosts() {

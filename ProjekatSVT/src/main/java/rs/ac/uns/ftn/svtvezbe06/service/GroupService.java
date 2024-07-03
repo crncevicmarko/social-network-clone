@@ -8,6 +8,7 @@ public interface GroupService {
 
 	public Group findById(int id);
 	public List<Group> findAll(int userId);
+	public List<Group> findAll();
 	public Group save(Group group);
 	public void delete(Integer id);
 	public void update(Integer id, String description);
